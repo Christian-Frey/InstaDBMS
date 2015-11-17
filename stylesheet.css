@@ -1,0 +1,40 @@
+body {
+  background-color:lightslategray;
+}
+
+/* For the login pictures */
+#login_pics {
+  float: left;
+  width:50%;
+}
+
+#login_pics img {
+  width: 50%;
+}
+
+/* For the login fields */
+#login_fields {
+  float: left;
+}
+#login_fields #loginUN, #loginPW {
+  width: 150px
+}
+
+#login_fields #login {
+  margin: 0;
+}
+
+#login_fields #login_button, #new_account {
+  background: #2086c9;
+  width: 150px;
+  border-style: none;
+  border-radius: 10px;
+  margin-top:10px;
+}
+
+/* CreateUser.php specific */
+
+#bio {
+	width:300px;
+	height:150px;
+} 
