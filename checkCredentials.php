@@ -8,16 +8,24 @@ if (($pw == NULL) || ($un == NULL))
     echo "failure";
     return;
 }
+if (!($stmt = $mysqli->prepare("SELECT name FROM user WHERE user_name =
+      ? AND password= ?")))
+{
+    echo $mysqli->error;
+}
 
-$query = "SELECT name FROM user WHERE user_name='" . $un 
-    . "' AND password='" . $pw . "';";
+if (!$stmt->bind_param("ss", $un, $pw))
+{
+    echo $mysqli->error;
+}
 
-$result = $mysqli->query($query);
+$stmt->execute();
+$result = $stmt->get_result();
 $rows = $result->num_rows;
 
 //No rows returned, their credentials were wrong.
 if ($rows == 0)
     echo "failure";
-else 
+else
     echo "success";
 ?>
