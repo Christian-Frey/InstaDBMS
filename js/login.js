@@ -1,32 +1,33 @@
 $(document).ready(addListeners);
 
-function addListeners() 
+function addListeners()
 {
     $("#login_button").click(loginUser);
     $("#new_account").click(createAccount);
 }
 
-function loginUser() 
+function loginUser()
 {
+    $("#failure")
     //Passwords are in plaintext, for extra security.
     var username = $("#loginUN").val();
     var password = $("#loginPW").val();
 
-    if (password == "" || username == "") 
+    if (password == "" || username == "")
     {
         $("#failure").replaceWith("<p id='failure'>Missing Username or Password</p>");
         return;
     }
-    
+
     var dataToSend= { "username": username, "password": password };
-    console.log(dataToSend);    
+    console.log(dataToSend);
 
     $.ajax({
         type: "POST",
-        url: "checkCredentials.php", 
+        url: "checkCredentials.php",
         data: dataToSend,
         dataType: "text",
-        success: function(data) 
+        success: function(data)
 		{
             if (data == "success") {
                 window.location = 'home/home.php';
@@ -37,10 +38,10 @@ function loginUser()
         }
     });
 }
-    
-function createAccount() 
+
+function createAccount()
 {
-    //Do we want to replace the login form with the account creation fields, 
+    //Do we want to replace the login form with the account creation fields,
     //or redirect them to a new page? Should require an equal amount of work.
     window.location="createUser.php";
 }

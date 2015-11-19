@@ -10,21 +10,16 @@ if (($pw == NULL) || ($un == NULL))
 }
 if (!($stmt = $mysqli->prepare("SELECT name FROM user WHERE user_name =
       ? AND password= ?")))
-{
     echo $mysqli->error;
-}
 
-if (!$stmt->bind_param("ss", $un, $pw))
-{
+if (!$stmt->bind_param('ss', $un, $pw))
     echo $mysqli->error;
-}
 
 $stmt->execute();
-$result = $stmt->get_result();
-$rows = $result->num_rows;
+$stmt->bind_result($name);
 
 //No rows returned, their credentials were wrong.
-if ($rows == 0)
+if (!$stmt->fetch())
     echo "failure";
 else
     echo "success";

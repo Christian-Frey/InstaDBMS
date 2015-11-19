@@ -5,9 +5,9 @@ switch ($_POST['query'])
 {
 	case 'newUser':
 		/* lets add this new user. */
-		if (!($stmt = $mysqli->prepare("INSERT INTO USER (user_name, password,
-			name, email, phone, bio, website, gender) VALUES
-			(?, ?, ?, ?, ?, ?, ?, ?)")));
+		if (!($stmt = $mysqli->prepare("INSERT INTO user (user_name, password,
+			name, email, phone, bio, website, gender) VALUES (?, ?, ?, ?, ?,
+				 ?, ?, ?)")))
 		{
 			echo $mysqli->error;
 		}
@@ -21,49 +21,29 @@ switch ($_POST['query'])
 		}
 
 		if ($stmt->execute())
-		{
 			echo "success";
-			$stmt->close();
-			return;
-		}
 		else
-		{
 			echo "failure";
-			return;
-		}
 
 		break;
 
 	case("uniqueUserOrPw"):
-		if (!($stmt = $mysqli->prepare("SELECT user_name, email from USER where
+		if (!($stmt = $mysqli->prepare("SELECT user_name, email FROM user WHERE
 			user_name= ? OR email= ?")))
-		{
 			echo $mysqli->error;
-		}
 
-		if (!$stmt->bind_param('ss', $_POST['username'],
-		$_POST['email']))
-		{
+		if (!$stmt->bind_param('ss', $_POST['username'], $_POST['email']))
 			echo $mysqli->error;
-		}
 
-		if ($stmt->execute())
-		{
-			$result = $stmt->get_result();
-		}
+		$stmt->execute();
+		$stmt->bind_result($un, $email);
 
-		if ($result->num_rows == 0)
-		{
-			/* no matchs, thats what we want */
+		if (!$stmt->fetch()) /* no matchs, thats what we want */
 			echo "success";
-			return;
-		}
 		else
-		{
 			echo "failure";
-			return;
-		}
 		break;
+
 	default:
 		/* Not quite sure how we got here, but return failure to be safe. */
 		echo "failure";
