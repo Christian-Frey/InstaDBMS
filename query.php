@@ -44,11 +44,38 @@ switch ($_POST['query'])
 			echo "failure";
 		break;
 
+	case("checkLogin"):
+		$un = $_POST['username'];
+		$pw = $_POST['password'];
+		if (($pw == NULL) || ($un == NULL))
+		{
+	    	echo "failure";
+	    	return;
+		}
+		if (!($stmt = $mysqli->prepare("SELECT user_id FROM user
+			WHERE user_name = ? AND password= ?")))
+		{
+	    	echo $mysqli->error;
+		}
+		if (!$stmt->bind_param('ss', $un, $pw))
+	    	echo $mysqli->error;
+
+		$stmt->execute();
+		$stmt->bind_result($uid);
+
+			//No rows returned, their credentials were wrong.
+		if (!$stmt->fetch())
+	    	echo "failure";
+		else
+		{
+	    	setcookie("instaDBMS", $uid);
+	    	echo "success";
+		}
+		break;
+		
 	default:
 		/* Not quite sure how we got here, but return failure to be safe. */
 		echo "failure";
 		return;
-
-
 }
 ?>
