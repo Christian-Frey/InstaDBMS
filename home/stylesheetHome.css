@@ -46,6 +46,15 @@
 	margin-right: auto;
 }
 
+.timeSince {
+	float: right;
+	margin-right: 5%;
+}
+
+.pUsername {
+	margin-left: 5%;
+}
+
 .likes {
 	margin-left: 5%;
 }

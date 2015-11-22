@@ -99,6 +99,33 @@ switch ($_POST['query'])
         echo "success";
         break;
 
+    case("likePhoto"):
+        // check if I like it first. And then do the opposite.
+        $stmt = $mysqli->prepare("SELECT photolikes.user_id FROM photolikes
+             WHERE photolikes.photo_id = ? AND photolikes.user_id = ?");
+        $stmt->bind_param("ii", $_POST['photo_id'], $_COOKIE['instaDBMS']);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows == '1')
+        {
+            // Already in the table, remove.
+            $stmtRemove = $mysqli->prepare("DELETE FROM photolikes WHERE
+                photolikes.user_id = ? AND photolikes.photo_id = ?");
+            $stmtRemove->bind_param('ii', $_COOKIE['instaDBMS'],
+                $_POST['photo_id']);
+            $stmtRemove->execute();
+
+            echo 'unlike';
+            break;
+        }
+        // not in the table, add to it.
+        $date = date('Y-m-d H:i:s');
+        $stmtLike = $mysqli->prepare("INSERT INTO photolikes (photo_id, user_id, time) VALUES (?, ?, ?)");
+        $stmtLike->bind_param('sss', $_POST['photo_id'], $_COOKIE['instaDBMS'], $date);
+        $stmtLike->execute();
+        echo $mysqli->error;
+        echo 'like';
+        break;
 	default:
 		/* Not quite sure how we got here, but return failure to be safe. */
 		echo "failure";

@@ -6,7 +6,7 @@
 
 <!-- pulls the jquery file from the directory above this one -->
 <script type='text/javascript' src="../jquery.min.js"></script>
-<script type='text/javascript' src="../js/addCommentListener.js"></script>
+<script type='text/javascript' src="../js/homeListener.js"></script>
 </head>
 <body>
 <?php
@@ -47,8 +47,8 @@
 		 photo.user_id = user.user_id WHERE photo.user_id = ?");
 
 	// ? is the photo_id to get the likes of (from $stmtImage)
-	$stmtCountLike = $mysqli->prepare("SELECT COUNT(photolikes.photo_id)
-		FROM photolikes WHERE photolikes.photo_id = ?");
+	$stmtCountLike = $mysqli->prepare("SELECT COUNT(photolikes.photo_id),
+    photolikes.user_id FROM photolikes WHERE photolikes.photo_id = ?");
 
 	// First ? is the photo_id of the photo we got
 	// Second ? is the user_id of the user to get the comment they made.
@@ -102,7 +102,7 @@
 	$stmtComment->execute();
 	$stmtComment->store_result();
 
-	$stmtCountLike->bind_result($numLikes);
+	$stmtCountLike->bind_result($numLikes, $userLikes);
 	$stmtComment->bind_result($user_name, $text);
 
 	// using COUNT, we are guanenteed only one row, no loop needed.
@@ -126,12 +126,21 @@
 	// Adding in the comment insert field.
 	echo
 	'<div class="mCommentSect">
-	<form onsubmit="return false;">
-		<span class="heart">Heart</span>
-		<input class="insertComment" type="text" placeholder="comment">
-		<span class="report">REPORT</span>
-	</form>
-	</div>';
+	<form onsubmit="return false;">';
+
+    $stmtUserLikes = $mysqli->prepare("SELECT user_id FROM photolikes where user_id = ?");
+    $stmtUserLikes->bind_param('i', $_COOKIE['instaDBMS']);
+    $stmtUserLikes->execute();
+    $stmtUserLikes->store_result();
+    $stmtUserLikes->bind_result($userLikes);
+    if ($stmtUserLikes->num_rows == 0)
+        echo '<a href="javascript:;" class="heart">NO LIKE</a>';
+    else {
+        echo '<a href="javascript:;" class="heart">LIKED</a>';
+    }
+	echo '<input class="insertComment" type="text" placeholder="comment">';
+	// 	<a href="javascript:;" class="report">REPORT</a>
+	echo '</form></div>';
 	// TODO: Add report button to the photo. Maybe use hover?
 	// TODO: Add a button when clicked that adds the current user_id
 	// and that photo id to the photolikes table.
