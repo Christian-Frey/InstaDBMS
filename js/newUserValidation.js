@@ -53,6 +53,16 @@ function createAccount () {
     }
   })
 
+  // Doing check to make sure the values fit within our constraints.
+
+  if (username.length === 0 ||
+      password.length === 0 ||
+      passwordConfirm.length === 0 ||
+      name.length  === 0 ||
+      email.length === 0) {
+          $('<One or more required fields is empty.</p>').appendTo('#error')
+          return false
+      }
   if (username.length > 30) {
     $('<p>Username is too long</p>').appendTo('#error')
     return false

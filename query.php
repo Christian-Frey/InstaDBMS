@@ -72,7 +72,33 @@ switch ($_POST['query'])
 	    	echo "success";
 		}
 		break;
-		
+
+
+	case("addComment"):
+		$user_name = $_POST['user_name'];
+        $stmtUserID = $mysqli->prepare("SELECT user_id FROM user WHERE
+        user_name = ?");
+        $stmtInsert = $mysqli->prepare("INSERT INTO comment (photo_id, user_id,
+            text, date) VALUES (?, ?, ?, ?)");
+
+        $stmtUserID->bind_param('s', $user_name);
+        $stmtUserID->execute();
+        $stmtUserID->store_result();
+        $stmtUserID->bind_result($uid);
+        $stmtUserID->fetch();
+
+        $date = date('Y-m-d H:i:s');
+        $stmtInsert->bind_param('iiss', $_POST['photo_id'], $uid,
+         $_POST['comment'], $date);
+        $stmtInsert->execute();
+        if ($stmtInsert->affected_rows != 1)
+        {
+            echo "failure";
+            break;
+        }
+        echo "success";
+        break;
+
 	default:
 		/* Not quite sure how we got here, but return failure to be safe. */
 		echo "failure";

@@ -6,6 +6,7 @@
 
 <!-- pulls the jquery file from the directory above this one -->
 <script type='text/javascript' src="../jquery.min.js"></script>
+<script type='text/javascript' src="../js/addCommentListener.js"></script>
 </head>
 <body>
 <?php
@@ -18,6 +19,9 @@
  <div class=header>
 	 <!--TODO: Replace text with an image -->
 	 <p id="projectName">instaDBMS</p>
+	 <!-- TODO: Add search functionality
+	 	  if search starts with # -> only search hashtag table
+		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
 	 <?php
@@ -38,8 +42,9 @@
 	// ? is the user_id who owns the photo.
 	// TODO: this gets a list of photos by that user. Do we want a
 	// specific one?
-	$stmtImage = $mysqli->prepare("SELECT image, photo_id FROM photo WHERE
-		photo.user_id = ?");
+	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
+		 photo.upload_date, user.user_name FROM photo INNER JOIN user on
+		 photo.user_id = user.user_id WHERE photo.user_id = ?");
 
 	// ? is the photo_id to get the likes of (from $stmtImage)
 	$stmtCountLike = $mysqli->prepare("SELECT COUNT(photolikes.photo_id)
@@ -57,43 +62,86 @@
 	$stmtImage->bind_param('i', $i);
 	$stmtImage->execute();
 	$stmtImage->store_result();
-	$stmtImage->bind_result($image, $photo_id);
+	$stmtImage->bind_result($image, $photo_id, $uploadDate, $pUsername);
 
-	while ($stmtImage->fetch())
+    // They only get one image per page for simplicity.
+	$stmtImage->fetch();
+	echo '<div class="photo_view">';
+	echo '<span class="pUsername">' . $pUsername . '</span>';
+
+	// We need the date for be formatted nicely. So lets do that.
+	$timeSinceUpload = (time() - strtotime($uploadDate));
+
+	// thanks to http://stackoverflow.com/a/2916189/5531440 for the help.
+	$timeSeconds = array (
+		31536000 => 'y',
+		2592000 => 'm',
+		604800 => 'w',
+		86400 => 'd',
+		3600 => 'h',
+		60 => 'm'
+	);
+	foreach ($timeSeconds as $time => $text)
 	{
-		echo '<div class="photo_view">';
-		// display the photo we got
-		echo '<img class="picture" src="data:image/jpg;base64,' . $image .
-		'"/>';
-
-		// Now that I have the photo_id, I can get the comments and likes
-		// that are tied to that photo.
-		$stmtCountLike->bind_param('i', $photo_id);
-		$stmtComment->bind_param('i', $photo_id);
-
-		$stmtCountLike->execute();
-		$stmtCountLike->store_result();
-		$stmtComment->execute();
-		$stmtComment->store_result();
-
-		$stmtCountLike->bind_result($numLikes);
-		$stmtComment->bind_result($user_name, $text);
-
-		// using COUNT, we are guanenteed only one row, no loop needed.
-		$stmtCountLike->fetch();
-		echo '<p class="likes">' . $numLikes;
-		echo (($numLikes == 1) ? ' like' : ' likes');
-		echo '<br>';
-
-		while ($stmtComment->fetch())
-		{
-			echo '<span class="comment">' . $user_name .  " " . $text .
-				 '</span>';
-			echo '<br>';
-		}
-		// and finally, close that div
-		echo '</div>';
+		if ($timeSinceUpload < $time) continue;
+		$numUnits = floor($timeSinceUpload / $time);
+		echo '<span class=timeSince>' . $numUnits . $text . '</span>';
+		break;
 	}
+	// display the photo we got
+	echo '<img class="picture" src="data:image/jpg;base64,' . $image .
+	'"/>';
+
+	// Now that I have the photo_id, I can get the comments and likes
+	// that are tied to that photo.
+	$stmtCountLike->bind_param('i', $photo_id);
+	$stmtComment->bind_param('i', $photo_id);
+
+	$stmtCountLike->execute();
+	$stmtCountLike->store_result();
+	$stmtComment->execute();
+	$stmtComment->store_result();
+
+	$stmtCountLike->bind_result($numLikes);
+	$stmtComment->bind_result($user_name, $text);
+
+	// using COUNT, we are guanenteed only one row, no loop needed.
+	$stmtCountLike->fetch();
+	echo '<p class="likes">' . $numLikes;
+	echo (($numLikes == 1) ? ' like' : ' likes');
+	echo '<br>';
+
+	while ($stmtComment->fetch())
+	{
+		echo '<span class="comment">' . $user_name .  " " . $text .
+			 '</span>';
+		echo '<br>';
+	}
+
+	// Sort of hacky. I need to get the photo_id of the image in JS
+	// So we will embed it into the page.
+	echo '<div id="photo_id" style="visibility: hidden; height: 0px;">'
+	. $photo_id . '</div>';
+
+	// Adding in the comment insert field.
+	echo
+	'<div class="mCommentSect">
+	<form onsubmit="return false;">
+		<span class="heart">Heart</span>
+		<input class="insertComment" type="text" placeholder="comment">
+		<span class="report">REPORT</span>
+	</form>
+	</div>';
+	// TODO: Add report button to the photo. Maybe use hover?
+	// TODO: Add a button when clicked that adds the current user_id
+	// and that photo id to the photolikes table.
+	// Need to do a select first to see if the user already liked the
+	// photo, and if they did, display the filled in heart. And clicking
+	//on that will un-like the picture...
+
+	// and finally, close that div
+	echo '</div>';
+
 	?>
 
 </body>

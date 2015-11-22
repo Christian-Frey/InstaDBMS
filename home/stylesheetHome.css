@@ -41,8 +41,23 @@
 
 .picture {
 	display: block;
+	width: 90%;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.likes {
+	margin-left: 5%;
+}
+
+.mCommentSect {
+	display: block;
+	margin-left: 3%;
+	margin-right: 3%;
+}
+
+.insertComment {
+	width: 80%;
 }
 
 

@@ -1,8 +1,6 @@
-body {
-  background-color:lightslategray;
-}
 
 /* For the login pictures */
+/* TODO: Add space between the header and first image. */
 #login_pics {
   float: left;
   width:50%;
@@ -35,6 +33,27 @@ body {
 /* CreateUser.php specific */
 
 #bio {
-	width:300px;
+	width:200px;
 	height:150px;
-} 
+}
+
+table {
+  width: 400px;
+  table-layout: fixed;
+  border-top: solid;
+  border-top-width: 1px;
+  border-top-color: grey;
+  border-bottom: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: grey;
+}
+
+td {
+  vertical-align: top;
+}
+
+#create {
+  background: green;
+  color: white;
+  border-radius: 10px;
+}
