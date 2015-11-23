@@ -1,6 +1,6 @@
 <head>
 <meta charset="utf-8">
-<title>New Account</title>
+<title>InstaDBMS - New Account</title>
 <link rel="stylesheet" type="text/css" media="screen" href="stylesheet.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/newUserValidation.js'></script>
@@ -38,10 +38,11 @@
 				Gender
 			</td>
 			<td><select id='gender'>
-        	<option value='male'>Male</option>
-        	<option value='female'>Female</option>
+					<option value="none"></option>
+        	<option value='Male'>Male</option>
+        	<option value='Female'>Female</option>
         	<option value='other'>Other</option>
-    	</select/>*</td>
+    	</select/></td>
 		</tr>
 		<tr>
 			<td>

@@ -58,11 +58,11 @@ function createAccount () {
   if (username.length === 0 ||
       password.length === 0 ||
       passwordConfirm.length === 0 ||
-      name.length  === 0 ||
+      name.length === 0 ||
       email.length === 0) {
-          $('<One or more required fields is empty.</p>').appendTo('#error')
-          return false
-      }
+    $('<One or more required fields is empty.</p>').appendTo('#error')
+    return false
+  }
   if (username.length > 30) {
     $('<p>Username is too long</p>').appendTo('#error')
     return false

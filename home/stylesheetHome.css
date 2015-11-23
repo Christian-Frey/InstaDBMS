@@ -49,24 +49,52 @@
 .timeSince {
 	float: right;
 	margin-right: 5%;
+	font-weight: bold;
 }
 
 .pUsername {
+	font-weight: bold;
 	margin-left: 5%;
 }
 
 .likes {
 	margin-left: 5%;
+	margin-bottom: 0px;
+	font-weight: bold;
+	
+}
+
+.comment {
+	margin-left: 5%;
+	margin-top: 0px;
 }
 
 .mCommentSect {
 	display: block;
+	margin-top: 5px;
 	margin-left: 3%;
 	margin-right: 3%;
 }
 
+.heart, .report {
+	background-color: skyblue;
+	border: solid;
+	border-color: white;
+	border-width: 1px;
+	color: black;
+	padding: 3px;
+	border-radius: 5px;
+}
+
+.heart {
+	float: left;
+}
+
 .insertComment {
-	width: 80%;
+	float: left;
+	width: 70%;
+	margin-right:2px;
+	margin-left: 2px;
 }
 
 

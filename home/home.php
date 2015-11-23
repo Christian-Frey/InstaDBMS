@@ -1,6 +1,6 @@
 <head>
 <meta charset="utf-8">
-<title>Instagram</title>
+<title>InstaDBMS</title>
 <link rel="stylesheet" type="text/css" media="screen"
 	  href="stylesheetHome.css" />
 
@@ -17,7 +17,6 @@
 
  <!-- Lets Make the header of the page -->
  <div class=header>
-	 <!--TODO: Replace text with an image -->
 	 <p id="projectName">instaDBMS</p>
 	 <!-- TODO: Add search functionality
 	 	  if search starts with # -> only search hashtag table
@@ -35,16 +34,20 @@
 		echo "<p id=user_name>" . $un . "</p>";
  ?>
 </div>
-
-	<!--TODO: Determine how we choose what photos to display -->
-	<!-- Static image for now -->
 	<?php
-	// ? is the user_id who owns the photo.
-	// TODO: this gets a list of photos by that user. Do we want a
-	// specific one?
+	// TODO: add support for moderator buttons.
+	// If the user is a mod, add view Reports and Promote Moderator button.
+
+	// This gets all the images that the logged in user and their friends have
+	// posted.
+	// The first section gets the right data, and the second section describes
+	// what user_ids to search for.
 	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
-		 photo.upload_date, user.user_name FROM photo INNER JOIN user on
-		 photo.user_id = user.user_id WHERE photo.user_id = ?");
+		photo.upload_date, user.user_name FROM photo INNER JOIN user on
+		photo.user_id = user.user_id WHERE photo.user_id IN
+		(SELECT user_id as user from user where user_id = ? UNION SELECT friend_id
+	  AS user FROM friend JOIN user ON user.user_id = friend.user_id and
+		user.user_id = ?)");
 
 	// ? is the photo_id to get the likes of (from $stmtImage)
 	$stmtCountLike = $mysqli->prepare("SELECT COUNT(photolikes.photo_id),
@@ -56,16 +59,14 @@
 		FROM comment INNER JOIN user ON comment.user_id=user.user_id WHERE
 		comment.photo_id = ? ORDER BY comment.comment_id ASC");
 
-
-	// TODO: replace with the user_id from the selction algorithm we chose
-	$i = 2;
-	$stmtImage->bind_param('i', $i);
+	$stmtImage->bind_param('ii', $cookie, $cookie);
 	$stmtImage->execute();
 	$stmtImage->store_result();
 	$stmtImage->bind_result($image, $photo_id, $uploadDate, $pUsername);
 
     // They only get one image per page for simplicity.
-	$stmtImage->fetch();
+	while ($stmtImage->fetch())
+	{
 	echo '<div class="photo_view">';
 	echo '<span class="pUsername">' . $pUsername . '</span>';
 
@@ -109,7 +110,7 @@
 	$stmtCountLike->fetch();
 	echo '<p class="likes">' . $numLikes;
 	echo (($numLikes == 1) ? ' like' : ' likes');
-	echo '<br>';
+	echo '</p>';
 
 	while ($stmtComment->fetch())
 	{
@@ -134,18 +135,19 @@
     $stmtUserLikes->store_result();
     $stmtUserLikes->bind_result($userLikes);
     if ($stmtUserLikes->num_rows == 0)
-        echo '<a href="javascript:;" class="heart">NO LIKE</a>';
+        echo '<a href="javascript:;" class="heart">Not Liked</a>';
     else {
-        echo '<a href="javascript:;" class="heart">LIKED</a>';
+        echo '<a href="javascript:;" class="heart">Liked</a>';
     }
+	// TODO: PARSE COMMENT and add hashtags to hastag table.
 	echo '<input class="insertComment" type="text" placeholder="comment">';
-	echo '<a href="javascript:;" class="report">REPORT</a>';
+	echo '<a href="javascript:;" class="report">Report</a>';
 	echo '</form></div>';
     echo '<div id="reportedPlaceholder"></div>';
 
 	// and finally, close that div
 	echo '</div>';
-
+}
 	?>
 
 </body>
