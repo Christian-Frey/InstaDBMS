@@ -5,6 +5,7 @@ function listener() {
   $(".insertComment").keyup(addComment)
   $(document).on('click', '.heart', likePhoto)
   $(".report").click(reportPhoto)
+  $(document).on('click', '#reportButton', submitReport)
 }
 
 function addComment(e) {
@@ -53,9 +54,36 @@ function likePhoto() {
             }
         }
     });
-    console.log("here");
 }
 
 function reportPhoto() {
-
+    $('#reportedPlaceholder').replaceWith('<div id="reportedPlaceholder">' + 
+        '<form onsubmit="return false;"><select id="reportWhy">' +
+        '<option value="1">I do not like this photo</option>' +
+        '<option value="2">Picture is spam or a scam</option>' +
+        '<option value="3">This photo puts people at risk.</option>' +
+        '<option value="4">This photo should not be on' +
+        'InstaDBMS</option></select>' +
+        '<input type="submit" id="reportButton" value="Report Photo">' +
+        '</form></div>')
+}
+function submitReport() {
+    $.ajax({
+        type: 'POST',
+        url: '../query.php',
+        data: {
+            'query': 'reportPhoto',
+            'photo_id': $('#photo_id').text(),
+            'reason': $('#reportWhy').val()
+        },
+        dateType: 'text',
+        success: function (data) {
+            console.log(data);
+            if (data === 'success') {
+                $("#reportedPlaceholder").replaceWith(
+                    '<p id="reportedPlaceholder">' +
+                    'Your report has been logged. Thank You.</p>')
+            }
+        }
+    })
 }

@@ -139,14 +139,9 @@
         echo '<a href="javascript:;" class="heart">LIKED</a>';
     }
 	echo '<input class="insertComment" type="text" placeholder="comment">';
-	// 	<a href="javascript:;" class="report">REPORT</a>
+	echo '<a href="javascript:;" class="report">REPORT</a>';
 	echo '</form></div>';
-	// TODO: Add report button to the photo. Maybe use hover?
-	// TODO: Add a button when clicked that adds the current user_id
-	// and that photo id to the photolikes table.
-	// Need to do a select first to see if the user already liked the
-	// photo, and if they did, display the filled in heart. And clicking
-	//on that will un-like the picture...
+    echo '<div id="reportedPlaceholder"></div>';
 
 	// and finally, close that div
 	echo '</div>';

@@ -126,7 +126,19 @@ switch ($_POST['query'])
         echo $mysqli->error;
         echo 'like';
         break;
-	default:
+
+    case("reportPhoto"):
+        $stmt = $mysqli->prepare("INSERT INTO reported (photo_id, user_id,
+             reason) VALUES (?, ?, ?)");
+        $stmt->bind_param('sss', $_POST['photo_id'], $_COOKIE['instaDBMS'],
+             $_POST['reason']);
+        $stmt->execute();
+
+        if (!$mysqli->error == "")
+            echo 'success';
+        break;
+
+    default:
 		/* Not quite sure how we got here, but return failure to be safe. */
 		echo "failure";
 		return;
