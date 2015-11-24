@@ -2,7 +2,7 @@
 $(document).ready(listener)
 
 function listener () {
-  $('.insertComment').keyup(addComment)
+  $('input').keyup(addComment)
   $(document).on('click', '.heart', likePhoto)
   $('.report').click(reportPhoto)
   $(document).on('click', '#reportButton', submitReport)
@@ -11,15 +11,37 @@ function listener () {
 
 function addComment (e) {
   var key = e.which
-  if (key === 13) { // They hit enter.
-    alert($('photo_id').text())
+  if (key === 13) {  // They hit enter.
+    var photo_id = e.target.id.replace('insertComment', '')
+    // We need to parse the comment and look for hashtags, and then
+    // add those to the hashtag table.
+    var commentString = $('#insertComment' + photo_id).val()
+    var token = commentString.split(' ')
+    for (var i = 0; i < token.length; i++) {
+      if (token[i][0] === '#') {
+        // hashtag, lets add it.
+        $.ajax({
+          type: 'POST',
+          url: '../query.php',
+          data: {
+            'query': 'addHashtag',
+            'photo_id': photo_id,
+            'hashtag': token[i]
+          },
+          dataType: 'text',
+          success: function (data) {
+          }
+        })
+      }
+    }
+
     $.ajax({
       type: 'POST',
       url: '../query.php',
       data: {
         'query': 'addComment',
-        'comment': $('.insertComment').val(),
-        'photo_id': $('#photo_id').text(),
+        'comment': commentString,
+        'photo_id': photo_id,
         'user_name': $('#user_name').text()
       },
       dataType: 'text',
@@ -33,8 +55,8 @@ function addComment (e) {
   }
 }
 
-function likePhoto () {
-  console.log('Clicked like button')
+function likePhoto (e) {
+  // var photo_id = e.target.id.replace('heart', '')
   $.ajax({
     type: 'POST',
     url: '../query.php',
@@ -45,7 +67,6 @@ function likePhoto () {
     },
     dataType: 'text',
     success: function (data) {
-      console.log(data)
       if (data === 'like') {
         $('.heart').replaceWith(
             '<a href="javascript:;" class="heart">Liked</a>')
@@ -59,7 +80,11 @@ function likePhoto () {
 }
 
 function reportPhoto () {
-  $('#reportedPlaceholder').replaceWith('<div id="reportedPlaceholder">' +
+  var parent = $(this).closest('div').parent()
+  var photo = parent[0].getAttribute('class')
+  photo = '.' + photo + ' #reportedPlaceholder'
+  $(photo).replaceWith(
+        '<div id="reportedPlaceholder">' +
         '<form onsubmit="return false;"><select id="reportWhy">' +
         '<option value="1">I do not like this photo</option>' +
         '<option value="2">Picture is spam or a scam</option>' +
@@ -70,19 +95,23 @@ function reportPhoto () {
         '</form></div>')
 }
 function submitReport () {
+  var parent = $(this).closest('div').parent()
+  var photoSel = '.' + parent[0].getAttribute('class') + ' #reportedPlaceholder'
+  var photo_id = parent[0].getAttribute('class').replace('photo_view', '')
+  console.log(photo_id)
   $.ajax({
     type: 'POST',
     url: '../query.php',
     data: {
       'query': 'reportPhoto',
-      'photo_id': $('#photo_id').text(),
+      'photo_id': photo_id,
       'reason': $('#reportWhy').val()
     },
     dateType: 'text',
     success: function (data) {
       console.log(data)
       if (data === 'success') {
-        $('#reportedPlaceholder').replaceWith(
+        $(photoSel).replaceWith(
             '<p id="reportedPlaceholder">' +
             'Your report has been logged. Thank You.</p>')
       }
@@ -97,7 +126,7 @@ function search (e) {
       type: 'POST',
       url: '../query.php',
       data: {
-        'query': 'search',
+        'query': 'search'
       },
       dataType: 'text',
       success: function (data) {

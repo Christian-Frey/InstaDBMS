@@ -8,26 +8,35 @@
 
 #projectName {
 	color: white;
-	position: absolute;
-	left: 5%;
+	float: left;
+	margin-left: 5%;
 }
 
 #searchSite {
-	position: absolute;
-	left: 40%;
+	float: left;
+	margin-left: 30%;
 	width: 20%;
 	margin-top: 13px;
 	border: none;
-	border-radius: 10px; 
+	border-radius: 10px;
 }
+
+#uploadPhoto {
+    float: left;;
+    margin-top: 13px;
+    margin-left:25%;
+}
+
 
 #user_name {
+	float: left;
 	color: white;
-	position: absolute;
-	right: 5%;
+	margin-left: 10px;
 }
 
-.photo_view {
+
+
+[class^=photo_view] {
 	display:block;
 	background-color: rgba(100, 100, 100, 0.05);
 	border-style: solid;
@@ -35,13 +44,6 @@
 	border-color: rgba(100, 100, 100, 0.2);
 	margin-top: 60px; /* 50px for the header, 10xp for a gap */
 	width: 60%;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.picture {
-	display: block;
-	width: 90%;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -57,26 +59,35 @@
 	margin-left: 5%;
 }
 
+img[id^=picture] {
+	width: 90%;
+	margin-left: 5%;
+	margin-right: 5%;
+}
+
 .likes {
 	margin-left: 5%;
 	margin-bottom: 0px;
 	font-weight: bold;
-	
 }
 
-.comment {
+.commentUser {
+	font-weight: bold;
 	margin-left: 5%;
+	margin-right: 5px;
+}
+.comment {
 	margin-top: 0px;
 }
 
 .mCommentSect {
 	display: block;
 	margin-top: 5px;
-	margin-left: 3%;
-	margin-right: 3%;
+	margin-left: 5%;
+	margin-right: 5%;
 }
 
-.heart, .report {
+.heart, .report, #uploadPhoto {
 	background-color: skyblue;
 	border: solid;
 	border-color: white;
@@ -90,11 +101,14 @@
 	float: left;
 }
 
-.insertComment {
+input[id^=insertComment] {
 	float: left;
 	width: 70%;
-	margin-right:2px;
-	margin-left: 2px;
+	margin-right:10px;
+	margin-left: 10px;
 }
 
-
+.photo_view5 .mCommentSect #reportedPlaceholder {
+	height: 10px;
+	color: red;
+}

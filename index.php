@@ -37,7 +37,7 @@
         {
             //And adding the images to the html.
 			$base64 = 'data:image/jpg;base64, '. $row['image'];
-            echo '<img alt="Embedded Image" src="' . $base64 . '" />';
+      echo '<img alt="Embedded Image" src="' . $base64 . '" />';
             //The EOL puts each img tag on a new time for readability.
 			echo PHP_EOL;
 

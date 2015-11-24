@@ -23,6 +23,7 @@
 		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
+     <a id=uploadPhoto href="uploadPhoto.php">Upload Photo</a>
 	 <?php
 	 require_once("../conn.php");
 	 $stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
@@ -67,7 +68,7 @@
     // They only get one image per page for simplicity.
 	while ($stmtImage->fetch())
 	{
-	echo '<div class="photo_view">';
+	echo '<div class="photo_view' . $photo_id . '">';
 	echo '<span class="pUsername">' . $pUsername . '</span>';
 
 	// We need the date for be formatted nicely. So lets do that.
@@ -86,12 +87,12 @@
 	{
 		if ($timeSinceUpload < $time) continue;
 		$numUnits = floor($timeSinceUpload / $time);
-		echo '<span class=timeSince>' . $numUnits . $text . '</span>';
+		echo '<span class=timeSince>' . $numUnits . $text . '</span><br>';
 		break;
 	}
 	// display the photo we got
-	echo '<img class="picture" src="data:image/jpg;base64,' . $image .
-	'"/>';
+	echo '<img id="picture' . $photo_id .
+        '" src="data:image/jpg;base64,' . $image . '"/>';
 
 	// Now that I have the photo_id, I can get the comments and likes
 	// that are tied to that photo.
@@ -114,15 +115,10 @@
 
 	while ($stmtComment->fetch())
 	{
-		echo '<span class="comment">' . $user_name .  " " . $text .
-			 '</span>';
-		echo '<br>';
+		echo '<span class="commentUser">' . $user_name .  " </span>";
+		echo '<span class="comment">' . $text .'</span><br>';
 	}
-
-	// Sort of hacky. I need to get the photo_id of the image in JS
-	// So we will embed it into the page.
-	echo '<div id="photo_id" style="visibility: hidden; height: 0px;">'
-	. $photo_id . '</div>';
+	echo '<div id="photo_id" style="visibility: hidden">' . $photo_id . '</div>';
 
 	// Adding in the comment insert field.
 	echo
@@ -135,12 +131,12 @@
     $stmtUserLikes->store_result();
     $stmtUserLikes->bind_result($userLikes);
     if ($stmtUserLikes->num_rows == 0)
-        echo '<a href="javascript:;" class="heart">Not Liked</a>';
+        echo '<a href="javascript:;" class="heart' . $photo_id . '">Not Liked</a>';
     else {
         echo '<a href="javascript:;" class="heart">Liked</a>';
     }
-	// TODO: PARSE COMMENT and add hashtags to hastag table.
-	echo '<input class="insertComment" type="text" placeholder="comment">';
+
+	echo '<input id="insertComment' . $photo_id . '" type="text" placeholder="comment">';
 	echo '<a href="javascript:;" class="report">Report</a>';
 	echo '</form></div>';
     echo '<div id="reportedPlaceholder"></div>';

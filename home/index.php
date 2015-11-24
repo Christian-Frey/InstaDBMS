@@ -31,6 +31,4 @@ $uid = $_COOKIE['instaDBMS'];
     while ($stmtUN->fetch())
        echo "<p id=user_name>" . $un . "</p>";
 ?>
-
-
 </body>
