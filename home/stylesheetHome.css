@@ -7,6 +7,8 @@
 }
 
 #projectName {
+	margin-top: 15px;
+	text-decoration: none;
 	color: white;
 	float: left;
 	margin-left: 5%;
@@ -22,18 +24,31 @@
 }
 
 #uploadPhoto {
-    float: left;;
+    float: left;
     margin-top: 13px;
     margin-left:25%;
 }
 
 
 #user_name {
+	margin-top: 15px;
+	text-decoration: none;
 	float: left;
 	color: white;
 	margin-left: 10px;
 }
 
+#viewReport {
+	position: absolute;
+	top: 12px;
+	left: 16%
+}
+
+#promoteMod {
+	position: absolute;
+  top: 12px;
+	left:10%;
+}
 
 
 [class^=photo_view] {
@@ -87,7 +102,7 @@ img[id^=picture] {
 	margin-right: 5%;
 }
 
-.heart, .report, #uploadPhoto {
+.heart, .report, #uploadPhoto, #promoteMod, #viewReport{
 	background-color: skyblue;
 	border: solid;
 	border-color: white;

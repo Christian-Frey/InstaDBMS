@@ -17,7 +17,7 @@
 
  <!-- Lets Make the header of the page -->
  <div class=header>
-	 <p id="projectName">instaDBMS</p>
+	 <a href="home.php" id="projectName">instaDBMS</a>
 	 <!-- TODO: Add search functionality
 	 	  if search starts with # -> only search hashtag table
 		  otherwise -> search both users and hashtags -->
@@ -27,18 +27,25 @@
 	 <?php
 	 require_once("../conn.php");
 	 $stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
+     $stmtIsAMod = $mysqli->prepare("SELECT mod_id FROM
+          moderator where mod_id = ?");
+     $stmtIsAMod->bind_param('i', $_COOKIE['instaDBMS']);
+     $stmtIsAMod->execute();
+     $stmtIsAMod->store_result();
+     if ($stmtIsAMod->num_rows == 1)
+     {
+         echo '<a id="viewReport" href="viewReports.php">View Reports</a>';
+         echo '<a id="promoteMod" href="promoteMod.php">Promote Mod</a>';
+     }
 	 // We cant be sure the user hasn't modified the cookie.
 	 $stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
 	 $stmtUN->execute();
 	 $stmtUN->bind_result($un);
 	 while ($stmtUN->fetch())
-		echo "<p id=user_name>" . $un . "</p>";
+		echo "<a id=user_name href='profile.php'>" . $un . "</a>";
  ?>
 </div>
 	<?php
-	// TODO: add support for moderator buttons.
-	// If the user is a mod, add view Reports and Promote Moderator button.
-
 	// This gets all the images that the logged in user and their friends have
 	// posted.
 	// The first section gets the right data, and the second section describes
