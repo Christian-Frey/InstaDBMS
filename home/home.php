@@ -17,27 +17,35 @@
 
  <!-- Lets Make the header of the page -->
  <div class=header>
-	 <p id="projectName">instaDBMS</p>
+	 <a href="home.php" id="projectName">instaDBMS</a>
 	 <!-- TODO: Add search functionality
 	 	  if search starts with # -> only search hashtag table
 		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
+     <a id=uploadPhoto href="uploadPhoto.php">Upload Photo</a>
 	 <?php
 	 require_once("../conn.php");
 	 $stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
+     $stmtIsAMod = $mysqli->prepare("SELECT mod_id FROM
+          moderator where mod_id = ?");
+     $stmtIsAMod->bind_param('i', $_COOKIE['instaDBMS']);
+     $stmtIsAMod->execute();
+     $stmtIsAMod->store_result();
+     if ($stmtIsAMod->num_rows == 1)
+     {
+         echo '<a id="viewReport" href="viewReports.php">View Reports</a>';
+         echo '<a id="promoteMod" href="promoteMod.php">Promote Mod</a>';
+     }
 	 // We cant be sure the user hasn't modified the cookie.
 	 $stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
 	 $stmtUN->execute();
 	 $stmtUN->bind_result($un);
 	 while ($stmtUN->fetch())
-		echo "<p id=user_name><a href='../profile.php'>" . $un . "</a></p>";
+		echo "<a id=user_name href='../profile.php'>" . $un . "</a>";
  ?>
 </div>
 	<?php
-	// TODO: add support for moderator buttons.
-	// If the user is a mod, add view Reports and Promote Moderator button.
-
 	// This gets all the images that the logged in user and their friends have
 	// posted.
 	// The first section gets the right data, and the second section describes
@@ -67,7 +75,7 @@
     // They only get one image per page for simplicity.
 	while ($stmtImage->fetch())
 	{
-	echo '<div class="photo_view">';
+	echo '<div class="photo_view' . $photo_id . '">';
 	echo '<span class="pUsername">' . $pUsername . '</span>';
 
 	// We need the date for be formatted nicely. So lets do that.
@@ -86,12 +94,12 @@
 	{
 		if ($timeSinceUpload < $time) continue;
 		$numUnits = floor($timeSinceUpload / $time);
-		echo '<span class=timeSince>' . $numUnits . $text . '</span>';
+		echo '<span class=timeSince>' . $numUnits . $text . '</span><br>';
 		break;
 	}
 	// display the photo we got
-	echo '<img class="picture" src="data:image/jpg;base64,' . $image .
-	'"/>';
+	echo '<img id="picture' . $photo_id .
+        '" src="data:image/jpg;base64,' . $image . '"/>';
 
 	// Now that I have the photo_id, I can get the comments and likes
 	// that are tied to that photo.
@@ -114,15 +122,10 @@
 
 	while ($stmtComment->fetch())
 	{
-		echo '<span class="comment">' . $user_name .  " " . $text .
-			 '</span>';
-		echo '<br>';
+		echo '<span class="commentUser">' . $user_name .  " </span>";
+		echo '<span class="comment">' . $text .'</span><br>';
 	}
-
-	// Sort of hacky. I need to get the photo_id of the image in JS
-	// So we will embed it into the page.
-	echo '<div id="photo_id" style="visibility: hidden; height: 0px;">'
-	. $photo_id . '</div>';
+	echo '<div id="photo_id" style="visibility: hidden">' . $photo_id . '</div>';
 
 	// Adding in the comment insert field.
 	echo
@@ -135,12 +138,12 @@
     $stmtUserLikes->store_result();
     $stmtUserLikes->bind_result($userLikes);
     if ($stmtUserLikes->num_rows == 0)
-        echo '<a href="javascript:;" class="heart">Not Liked</a>';
+        echo '<a href="javascript:;" class="heart' . $photo_id . '">Not Liked</a>';
     else {
         echo '<a href="javascript:;" class="heart">Liked</a>';
     }
-	// TODO: PARSE COMMENT and add hashtags to hastag table.
-	echo '<input class="insertComment" type="text" placeholder="comment">';
+
+	echo '<input id="insertComment' . $photo_id . '" type="text" placeholder="comment">';
 	echo '<a href="javascript:;" class="report">Report</a>';
 	echo '</form></div>';
     echo '<div id="reportedPlaceholder"></div>';

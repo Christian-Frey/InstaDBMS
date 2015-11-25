@@ -132,6 +132,7 @@ switch ($_POST['query'])
         $stmtInsert->execute();
         if ($stmtInsert->affected_rows != 1)
         {
+            echo $mysqli->error;
             echo "failure";
             break;
         }
@@ -208,6 +209,16 @@ switch ($_POST['query'])
         echo 'followed';
         break;
 
+
+    case('addHashtag'):
+        $stmt = $mysqli->prepare("INSERT INTO hashtag(photo_id, hashtag) VALUES (?, ?)");
+        $stmt->bind_param('ss', $_POST['photo_id'], $_POST['hashtag']);
+        $stmt->execute();
+        if ($stmt->num_rows == 1)
+        {
+            echo "Hashtag Added";
+        }
+        break;
 
     default:
 		/* Not quite sure how we got here, but return failure to be safe. */
