@@ -38,4 +38,6 @@
 	 $stmtUN->bind_result($un);
 	 while ($stmtUN->fetch())
 		echo "<a id=user_name href='profile.php'>" . $un . "</a>";
+
+	// TODO: Add in Logic for this screen - Hayly
  ?>

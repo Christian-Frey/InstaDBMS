@@ -47,9 +47,10 @@
 	// posted.
 	// The first section gets the right data, and the second section describes
 	// what user_ids to search for.
+
 	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
-		photo.upload_date, user.user_name FROM photo INNER JOIN user on
-		photo.user_id = user.user_id WHERE photo.user_id IN
+		photo.upload_date, photo.hidden, user.user_name FROM photo INNER JOIN
+		user on photo.user_id = user.user_id WHERE photo.user_id IN
 		(SELECT user_id as user from user where user_id = ? UNION SELECT friend_id
 	  AS user FROM friend JOIN user ON user.user_id = friend.user_id and
 		user.user_id = ?)");
@@ -60,14 +61,14 @@
 
 	// First ? is the photo_id of the photo we got
 	// Second ? is the user_id of the user to get the comment they made.
-	$stmtComment = $mysqli->prepare("SELECT user.user_name, comment.text
-		FROM comment INNER JOIN user ON comment.user_id=user.user_id WHERE
-		comment.photo_id = ? ORDER BY comment.comment_id ASC");
+	$stmtComment = $mysqli->prepare("SELECT user.user_name, comment.text,
+		comment.hidden FROM comment INNER JOIN user ON comment.user_id =
+		user.user_id WHERE comment.photo_id = ? ORDER BY comment.comment_id ASC");
 
 	$stmtImage->bind_param('ii', $cookie, $cookie);
 	$stmtImage->execute();
 	$stmtImage->store_result();
-	$stmtImage->bind_result($image, $photo_id, $uploadDate, $pUsername);
+	$stmtImage->bind_result($image, $photo_id, $uploadDate, $pHidden, $pUsername);
 
     // They only get one image per page for simplicity.
 	while ($stmtImage->fetch())
@@ -95,8 +96,11 @@
 		break;
 	}
 	// display the photo we got
-	echo '<a href="photoView.php?photo=' . $photo_id . '"><img id="picture' . $photo_id .
-        '" src="data:image/jpg;base64,' . $image . '"/></a>';
+	echo $pHidden;
+	if (!$pHidden.is_null()) {
+		echo '<a href="photoView.php?photo=' . $photo_id . '"><img id="picture'
+		. $photo_id . '" src="data:image/jpg;base64,' . $image . '"/></a>';
+	}
 
 	// Now that I have the photo_id, I can get the comments and likes
 	// that are tied to that photo.
@@ -109,7 +113,8 @@
 	$stmtComment->store_result();
 
 	$stmtCountLike->bind_result($numLikes, $userLikes);
-	$stmtComment->bind_result($user_name, $text);
+	$stmtComment->bind_result($user_name, $text, $cHidden);
+	// TODO: If hidden, then don't display. 
 
 	// using COUNT, we are guanenteed only one row, no loop needed.
 	$stmtCountLike->fetch();
@@ -120,8 +125,11 @@
 	// Going through each comment, and adding it below the picture.
 	while ($stmtComment->fetch())
 	{
-		echo '<span class="commentUser">' . $user_name .  " </span>";
-		echo '<span class="comment">' . $text .'</span><br>';
+		if (!$cHidden.is_null())
+		{
+			echo '<span class="commentUser">' . $user_name .  " </span>";
+			echo '<span class="comment">' . $text .'</span><br>';
+		}
 	}
 	echo '<div id="photo_id" style="visibility: hidden">' . $photo_id . '</div>';
 

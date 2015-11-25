@@ -45,9 +45,10 @@
     echo '</div>';
 	// TODO: Implement View Reports
 
-    $stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id, photo.upload_date, user.user_name FROM photo INNER JOIN user on
-		photo.user_id = user.user_id WHERE photo.user_id IN
-		(SELECT reported.user_id FROM reported)");
+    $stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
+      photo.upload_date, user.user_name FROM photo INNER JOIN user on
+		  photo.user_id = user.user_id WHERE photo.user_id IN
+		  (SELECT reported.user_id FROM reported)");
 	$stmtImage->execute();
 	$stmtImage->store_result();
 	$stmtImage->bind_result($image, $photo_id, $uploadDate, $pUsername);
@@ -109,8 +110,16 @@
               echo '<span class="reason">A good reason</span><br>';
               break;
           }
-        }
 
+        }
+        // TODO: Add JS to handle the button clicks, and do the SQL.
+        // Then refesh the page. - Christian
+        // TODO: Clean up CSS - Christian
+        ?>
+        <input type='button' id='ignore' value='Ignore' />
+        <input type='button' id='remove' value='Remove' />
+        <input type='button' id='disable' value='Disable User' />
+        <?php
         echo '</div>';
     }
 ?>
