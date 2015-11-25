@@ -16,9 +16,6 @@
  <!-- Lets Make the header of the page -->
  <div class=header>
 	 <a href="home.php" id="projectName">instaDBMS</a>
-	 <!-- TODO: Add search functionality
-	 	  if search starts with # -> only search hashtag table
-		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
      <a id=uploadPhoto href="uploadPhoto.php">Upload Photo</a>
@@ -41,4 +38,5 @@
 	 $stmtUN->bind_result($un);
 	 while ($stmtUN->fetch())
 		echo "<a id=user_name href='profile.php'>" . $un . "</a>";
+		// TODO: Implement View Reports
  ?>
