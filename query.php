@@ -26,6 +26,45 @@ switch ($_POST['query'])
 			echo "failure";
 
 		break;
+		
+	case 'updateUser':
+
+		if (!($stmt = $mysqli->prepare("SELECT user_name,email,user_id FROM user WHERE
+		(user_name=? OR email=?) AND user_id != ?")))
+		echo $mysqli->error;
+
+		if (!$stmt->bind_param('sss', $_POST['username'], $_POST['email'], $_COOKIE['instaDBMS']))
+			echo $mysqli->error;
+
+		$stmt->execute();
+		$stmt->bind_result($un, $email, $uid);
+
+		if ($stmt->fetch()) { /* no matchs, thats what we want */
+			echo "userExists";
+			break;
+		}
+		
+		/* lets update this user. */
+		if (!($stmt = $mysqli->prepare("UPDATE user SET user_name=?, password=?,
+			name=?, email=?, phone=?, bio=?, website=?, gender=? WHERE user.user_id=?")))
+		{
+			echo $mysqli->error;
+		}
+
+		if (!$stmt->bind_param("sssssssss", $_POST['username'],
+		    $_POST['password'], $_POST['name'], $_POST['email'],
+			$_POST['phone'], $_POST['bio'], $_POST['website'],
+		    $_POST['gender'], $_COOKIE['instaDBMS']))
+		{
+			echo $mysqli->error;
+		}
+
+		if ($stmt->execute())
+			echo "success";
+		else
+			echo "failure";
+
+		break;
 
 	case("uniqueUserOrPw"):
 		if (!($stmt = $mysqli->prepare("SELECT user_name, email FROM user WHERE
@@ -137,6 +176,38 @@ switch ($_POST['query'])
         if (!$mysqli->error == "")
             echo 'success';
         break;
+	
+    case("followUser"):
+        // check if I like it first. And then do the opposite.
+		if (!isset($_POST['friend_id']) || !isset($_COOKIE['instaDBMS'])) {
+			echo "failure";
+			break;
+		}
+        $stmt = $mysqli->prepare("SELECT friend.user_id FROM friend
+             WHERE friend.user_id = ? AND friend.friend_id = ?");
+        $stmt->bind_param("ii", $_COOKIE['instaDBMS'], $_POST['friend_id']);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows == 1)
+        {
+            // Already in the table, remove.
+            $stmtRemove = $mysqli->prepare("DELETE FROM friend WHERE
+                friend.user_id = ? AND friend.friend_id = ?");
+            $stmtRemove->bind_param('ii', $_COOKIE['instaDBMS'],
+                $_POST['friend_id']);
+            $stmtRemove->execute();
+
+            echo 'unfollowed';
+            break;
+        }
+
+        $stmtLike = $mysqli->prepare("INSERT INTO friend (user_id, friend_id) VALUES (?, ?)");
+        $stmtLike->bind_param('ss', $_COOKIE['instaDBMS'], $_POST['friend_id']);
+        $stmtLike->execute();
+        echo $mysqli->error;
+        echo 'followed';
+        break;
+
 
     default:
 		/* Not quite sure how we got here, but return failure to be safe. */

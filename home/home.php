@@ -31,7 +31,7 @@
 	 $stmtUN->execute();
 	 $stmtUN->bind_result($un);
 	 while ($stmtUN->fetch())
-		echo "<p id=user_name>" . $un . "</p>";
+		echo "<p id=user_name><a href='../profile.php'>" . $un . "</a></p>";
  ?>
 </div>
 	<?php
