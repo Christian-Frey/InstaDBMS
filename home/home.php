@@ -95,8 +95,8 @@
 		break;
 	}
 	// display the photo we got
-	echo '<img id="picture' . $photo_id .
-        '" src="data:image/jpg;base64,' . $image . '"/>';
+	echo '<a href="photoView.php?photo=' . $photo_id . '"><img id="picture' . $photo_id .
+        '" src="data:image/jpg;base64,' . $image . '"/></a>';
 
 	// Now that I have the photo_id, I can get the comments and likes
 	// that are tied to that photo.

@@ -3,6 +3,12 @@ $(document).ready(listener)
 
 function listener () {
   $(document).on('click', '.follow', followUser)
+  $(document).on('click', '.log_out', endSession)
+}
+
+function endSession () {
+	document.cookie = 'instaDBMS=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	window.location = 'index.php';
 }
 
 function followUser () {
@@ -27,21 +33,4 @@ function followUser () {
       }
     }
   })
-}
-
-function search (e) {
-  var key = e.which
-  if (key === 13) { // They hit enter.
-    $.ajax({
-      type: 'POST',
-      url: '../query.php',
-      data: {
-        'query': 'search',
-      },
-      dataType: 'text',
-      success: function (data) {
-
-      }
-    })
-  }
 }

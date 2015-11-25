@@ -27,7 +27,7 @@
 		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
- 	<p id=user_name><a href='../DBMS'>Log out</a></p>
+ 	<p id="user_name"><a href='javascript:;' class="log_out">Log out</a></p>
 </div>
 	<?php
 	// TODO: add support for moderator buttons.
@@ -97,7 +97,7 @@
 	while ($stmtPhotos->fetch())
 	{
 		echo '<div class="prof_pics">';
-		echo '<img src="data:image/jpg;base64,' . $image . '"/>';
+		echo '<a href="home/photoView.php?photo=' . $photo_id . '"><img src="data:image/jpg;base64,' . $image . '"/></a>';
 		$count = $count + 1;
 		if ($count == 3)
 		{

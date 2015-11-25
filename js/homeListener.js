@@ -134,10 +134,10 @@ function search (e) {
       success: function (data) {
         if (data === 'hashtag') {
           searchTerm = searchTerm.substr(1)
-          var url = '/hashtagSearch.php?ht=' + searchTerm
+          var url = '../searchResults.php?search=' + searchTerm
           window.location = (url)
         }
-        if (data === 'failure') {
+        else if (data === 'failure') {
           alert('No user found.')
         } else {
           window.location = ('../profile.php?id=' + data)
