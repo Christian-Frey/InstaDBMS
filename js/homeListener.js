@@ -2,11 +2,11 @@
 $(document).ready(listener)
 
 function listener () {
-  $('input').keyup(addComment)
+  $('#searchSite').keyup(search)
+  $('[class^=insertComment]').keyup(addComment)
   $(document).on('click', '.heart', likePhoto)
   $('.report').click(reportPhoto)
   $(document).on('click', '#reportButton', submitReport)
-  $('#searchSite').keyup(search)
 }
 
 function addComment (e) {
@@ -122,15 +122,26 @@ function submitReport () {
 function search (e) {
   var key = e.which
   if (key === 13) { // They hit enter.
+    var searchTerm = $('#searchSite').val()
     $.ajax({
       type: 'POST',
       url: '../query.php',
       data: {
-        'query': 'search'
+        'query': 'search',
+        'search': searchTerm
       },
       dataType: 'text',
       success: function (data) {
-
+        if (data === 'hashtag') {
+          searchTerm = searchTerm.substr(1)
+          var url = '/hashtagSearch.php?ht=' + searchTerm
+          window.location = (url)
+        }
+        if (data === 'failure') {
+          alert('No user found.')
+        } else {
+          window.location = ('../profile.php?id=' + data)
+        }
       }
     })
   }

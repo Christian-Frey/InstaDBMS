@@ -3,7 +3,28 @@ require_once("conn.php");
 
 switch ($_POST['query'])
 {
-	case 'newUser':
+    case('search'):
+        //search and parse
+        $sap = $_POST['search'];
+        if ($sap{0} == '#')
+            echo "hashtag";
+        else
+        {
+            $stmt = $mysqli->prepare(
+            "SELECT user_id FROM user WHERE user_name = ?");
+            $stmt->bind_param('s', $sap);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($uid);
+            $stmt->fetch();
+            if ($uid != '')
+                echo $uid;
+            else
+                echo 'failure';
+        }
+        break;
+
+	case ('newUser'):
 		/* lets add this new user. */
 		if (!($stmt = $mysqli->prepare("INSERT INTO user (user_name, password,
 			name, email, phone, bio, website, gender) VALUES (?, ?, ?, ?, ?,
