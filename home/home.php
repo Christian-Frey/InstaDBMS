@@ -117,6 +117,7 @@
 	echo (($numLikes == 1) ? ' like' : ' likes');
 	echo '</p>';
 
+	// Going through each comment, and adding it below the picture.
 	while ($stmtComment->fetch())
 	{
 		echo '<span class="commentUser">' . $user_name .  " </span>";
