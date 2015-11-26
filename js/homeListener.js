@@ -3,7 +3,7 @@ $(document).ready(listener)
 
 function listener () {
   $('#searchSite').keyup(search)
-  $('[class^=insertComment]').keyup(addComment)
+  $('[id^="insertComment"]').keyup(addComment)
   $(document).on('click', '.heart', likePhoto)
   $('.report').click(reportPhoto)
   $(document).on('click', '#reportButton', submitReport)
@@ -136,8 +136,7 @@ function search (e) {
           searchTerm = searchTerm.substr(1)
           var url = '../searchResults.php?search=' + searchTerm
           window.location = (url)
-        }
-        else if (data === 'failure') {
+        } else if (data === 'failure') {
           alert('No user found.')
         } else {
           window.location = ('../profile.php?id=' + data)

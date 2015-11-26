@@ -22,9 +22,6 @@
  <!-- Lets Make the header of the page -->
  <div class=header>
 	 <p id="projectName"><a href='home/home.php'>instaDBMS</a></p>
-	 <!-- TODO: Add search functionality
-	 	  if search starts with # -> only search hashtag table
-		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
  	<p id=user_name><a href='../DBMS'>Log out</a></p>
@@ -32,7 +29,7 @@
 	<?php
 
 	require_once("conn.php");
-	$stmtPhotos = $mysqli->prepare("SELECT photo_id,image FROM photo WHERE photo.photo_id IN 
+	$stmtPhotos = $mysqli->prepare("SELECT photo_id,image FROM photo WHERE photo.photo_id IN
 		(SELECT hashtag.photo_id FROM hashtag WHERE hashtag.hashtag=?) ORDER BY photo.photo_id DESC");
 	$stmtPhotos->bind_param('s', $viewing);
 
@@ -56,7 +53,7 @@
 		echo '</div>';
 	}
 	echo '</div>';
-	
+
 	?>
 
 </body>
