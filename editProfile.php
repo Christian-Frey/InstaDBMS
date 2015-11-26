@@ -1,6 +1,14 @@
+<!--
+Name: editProfile.php
+Author: Hayly
+Purpose: Allows a logged in user to change their account details. It
+         autofills the users details so they know what values are currently
+         stored. See createUser.php for a similar file.
+-->
 <head>
 <meta charset="utf-8">
 <title>InstaDBMS - New Account</title>
+<!-- including all of the required files. -->
 <link rel="stylesheet" type="text/css" media="screen" href="stylesheet.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/editUserValidation.js'></script>
@@ -13,8 +21,13 @@
 	<table>
     	<tr>
 		<?php
+            // Connecting to the server...*dial up noises*
 			require_once("conn.php");
-			$stmtProfile = $mysqli->prepare("SELECT user_name,password,name,email,phone,bio,website,gender FROM user WHERE user.user_id=?");
+
+            // Getting the user details of the logged in user.
+			$stmtProfile = $mysqli->prepare("SELECT user_name, password, name,
+                email, phone, bio, website, gender FROM user WHERE
+                user.user_id = ?");
 			$stmtProfile->bind_param('i', $_COOKIE['instaDBMS']);
 
 			$stmtProfile->execute();
@@ -22,6 +35,9 @@
 			$stmtProfile->bind_result($user_name, $password, $name, $email, $phone, $bio, $website, $gender);
 			$stmtProfile->fetch();
 		?>
+            <!-- Here we display all of the users data in table form.
+                 the current values are autofilled by php, and can be
+                 changed by typing over them. -->
 			<td>Username</td>
 			<td><input type='text' id='username' placeholder='Username' value="<?php echo $user_name;?>"/>*</td>
 		</tr>
@@ -48,6 +64,7 @@
 				Gender
 			</td>
 			<td><select id='gender'>
+            <!-- A dropdown for the user to select their gender -->
         	<option value='Other' <?php if ($gender == "O") echo 'selected'; ?>>Unspecified</option>
         	<option value='Male' <?php if ($gender == "M") echo 'selected'; ?>>Male</option>
         	<option value='Female' <?php if ($gender == "F") echo 'selected'; ?>>Female</option>
@@ -79,6 +96,7 @@
 		</tr>
 	</table>
 	<div id='error'></div>
+    <!-- The submit button which is handled by js/editUserValidation.js -->
 	<input type='submit' id='update' value='Update Account'>
 </form>
 

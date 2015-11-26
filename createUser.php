@@ -1,15 +1,26 @@
+<!--
+Name: createUser.php
+Author: Christian
+Purpose: Provides the structure for the create use page, allowing the
+         user to enter their contact details. See editProfile for a
+         similar file.
+-->
 <head>
 <meta charset="utf-8">
 <title>InstaDBMS - New Account</title>
+<!-- including all of the required files. -->
 <link rel="stylesheet" type="text/css" media="screen" href="stylesheet.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/newUserValidation.js'></script>
 </head>
-
 <body>
 <h2>Create New Account</h2>
 <form id="newUser" onsubmit="return false;">
 	<p>* Required</p>
+    <!-- Here we have table where the user can enter their details
+         in a structured way. <tr> specifies the row, with the
+         field name and an input box where the user can type their
+        data. Reqired fields are denoted by a * -->
 	<table>
     	<tr>
 			<td>Username</td>
@@ -36,7 +47,7 @@
 		<tr>
 			<td>
 				Gender
-			</td>
+			</td> <!-- A dropdown for the user to select their gender -->
 			<td><select id='gender'>
 					<option value="none"></option>
         	<option value='Male'>Male</option>
@@ -70,9 +81,7 @@
 		</tr>
 	</table>
 	<div id='error'></div>
+    <!-- The submit button which is handled by js/newUserValidation.js -->
 	<input type='submit' id='create' value='Create Account'>
 </form>
-
-
-
 </body>

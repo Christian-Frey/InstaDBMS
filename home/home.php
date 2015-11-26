@@ -1,3 +1,11 @@
+<!--
+Name: Home.php
+Author: Christian Frey
+Purpose: The root of just about everything. This page is the homepage which
+provides the user a list of images, links to just about everywhere, and a search
+bar if the provided links are not good enough.
+-->
+
 <head>
 <meta charset="utf-8">
 <title>InstaDBMS</title>
@@ -6,61 +14,69 @@
 
 <!-- pulls the jquery file from the directory above this one -->
 <script type='text/javascript' src="../jquery.min.js"></script>
+<!-- The home listener handles all the user input for the page -->
 <script type='text/javascript' src="../js/homeListener.js"></script>
 </head>
 <body>
 <?php
+    // Checking if the user is logged in. If not, it kicks them out.
 	$cookie = $_COOKIE['instaDBMS'];
 	if (!isset($_COOKIE['instaDBMS']))
 		header('Location: ../index.php');
  ?>
 
- <!-- Lets Make the header of the page -->
+ <!-- Lets make the header of the page -->
  <div class=header>
 	 <a href="home.php" id="projectName">instaDBMS</a>
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
      <a id=uploadPhoto href="uploadPhoto.php">Upload Photo</a>
 	 <?php
+     // Connecting to the server...*dial up noises*
 	 require_once("../conn.php");
+
+     // Getting the username of the user based on their user_id.
 	 $stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
+     // Checking if the user is a moderator based on the user_id.
      $stmtIsAMod = $mysqli->prepare("SELECT mod_id FROM
           moderator where mod_id = ?");
      $stmtIsAMod->bind_param('i', $_COOKIE['instaDBMS']);
      $stmtIsAMod->execute();
      $stmtIsAMod->store_result();
+
+     // They are a mod, so lets give them special mod buttons.
      if ($stmtIsAMod->num_rows == 1)
      {
          echo '<a id="viewReport" href="viewReports.php">View Reports</a>';
          echo '<a id="promoteMod" href="promoteMod.php">Promote Mod</a>';
      }
-	 // We cant be sure the user hasn't modified the cookie.
+     // Now we can get the users name to display on their page.
 	 $stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
 	 $stmtUN->execute();
 	 $stmtUN->bind_result($un);
 	 while ($stmtUN->fetch())
 		echo "<a id=user_name href='../profile.php'>" . $un . "</a>";
  ?>
-</div>
+</div> <!-- HEADER END -->
 	<?php
-	// This gets all the images that the logged in user and their friends have
-	// posted.
-	// The first section gets the right data, and the second section describes
-	// what user_ids to search for.
-
-	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.user_id, photo.photo_id,
+    // This gets all the images that the logged in user and their friends have
+	// posted. The first section gets the right data, and the second section
+    // (After the join) describes what user_ids to search for.
+	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
 		photo.upload_date, photo.hidden, user.user_name FROM photo INNER JOIN
 		user on photo.user_id = user.user_id WHERE photo.user_id IN
 		(SELECT user_id as user from user where user_id = ? UNION SELECT friend_id
 	  AS user FROM friend JOIN user ON user.user_id = friend.user_id and
 		user.user_id = ?)");
 
+    // Getting the number of likes on the photo using the COUNT function.
 	// ? is the photo_id to get the likes of (from $stmtImage)
 	$stmtCountLike = $mysqli->prepare("SELECT COUNT(photolikes.photo_id),
     photolikes.user_id FROM photolikes WHERE photolikes.photo_id = ?");
 
-	// First ? is the photo_id of the photo we got
-	// Second ? is the user_id of the user to get the comment they made.
+    // Getting the comments that are tied to a particular photo.
+	// The first ? is the photo_id of the photo we got, and the
+    // second ? is the user_id of the user to get the comment they made.
 	$stmtComment = $mysqli->prepare("SELECT user.user_name, comment.text,
 		comment.hidden FROM comment INNER JOIN user ON comment.user_id =
 		user.user_id WHERE comment.photo_id = ? ORDER BY comment.comment_id ASC");
@@ -70,11 +86,17 @@
 	$stmtImage->store_result();
 	$stmtImage->bind_result($image, $pUser_id, $photo_id, $uploadDate, $pHidden, $pUsername);
 
-    // They only get one image per page for simplicity.
 	while ($stmtImage->fetch())
 	{
+    // I'm choosing not to indent here due to the large nature of the loop,
+    // it serves no purpose as you can never see anywhere close to the top
+    // when you are near the bottom.
+
+    // If the picture is hidden, then move onto the next.
     if (!($pHidden === NULL)) continue;
+    // The div is used to contain all the data about the photo.
 	echo '<div class="photo_view' . $photo_id . '">';
+    // We want to place the user who posted above the image.
 	echo '<a href="../profile.php?id=' . $pUser_id . '"><span class="pUsername">' . $pUsername . '</span></a>';
 
 	// We need the date for be formatted nicely. So lets do that.
@@ -89,6 +111,8 @@
 		3600 => 'h',
 		60 => 'm'
 	);
+    // Getting the largest unit of time we can, then the number for an
+    // aproximate time since when the image was posted.
 	foreach ($timeSeconds as $time => $text)
 	{
 		if ($timeSinceUpload < $time) continue;
@@ -96,7 +120,7 @@
 		echo '<span class=timeSince>' . $numUnits . $text . '</span><br>';
 		break;
 	}
-	// display the photo we got
+    // display the photo we got, assuming the photo is not hidden.
 	if ($pHidden === NULL) {
 		echo '<a href="photoView.php?photo=' . $photo_id . '"><img id="picture'
 		. $photo_id . '" src="data:image/jpg;base64,' . $image . '"/></a>';
@@ -111,7 +135,6 @@
 	$stmtCountLike->store_result();
 	$stmtComment->execute();
 	$stmtComment->store_result();
-
 	$stmtCountLike->bind_result($numLikes, $userLikes);
 	$stmtComment->bind_result($user_name, $text, $cHidden);
 
@@ -121,7 +144,8 @@
 	echo (($numLikes == 1) ? ' like' : ' likes');
 	echo '</p>';
 
-	// Going through each comment, and adding it below the picture.
+    // While we have more comments, and the comments are not hidden, then
+    // insert them below the picture.
 	while ($stmtComment->fetch())
 	{
 		if ($cHidden === NULL)
@@ -130,6 +154,8 @@
 			echo '<span class="comment">' . $text .'</span><br>';
 		}
 	}
+    // A bit of legacy to provide the photo_id in the page so jQuery
+    // can get at, before it was embedded into the div name.
 	echo '<div id="photo_id" style="visibility: hidden">' . $photo_id . '</div>';
 
 	// Adding in the comment insert field.
@@ -137,25 +163,32 @@
 	'<div class="mCommentSect">
 	<form onsubmit="return false;">';
 
+    // Checking if the user likes this photo. and outputing the correct
+    // value, allowing them to toggle between the two at will.
     $stmtUserLikes = $mysqli->prepare("SELECT user_id FROM photolikes where user_id = ?");
     $stmtUserLikes->bind_param('i', $_COOKIE['instaDBMS']);
     $stmtUserLikes->execute();
     $stmtUserLikes->store_result();
     $stmtUserLikes->bind_result($userLikes);
+
+    // No rows returned, they must not have liked the photo yet.
     if ($stmtUserLikes->num_rows == 0)
         echo '<a href="javascript:;" class="heart' . $photo_id . '">Not Liked</a>';
     else {
         echo '<a href="javascript:;" class="heart">Liked</a>';
     }
 
+    // Providing the input comment field, and a button to report the
+    // photo. Once the report button is clicked, a dropdown is added by
+    // Javascript (homeListener.js) to allow the user to choose why
+    // the image should be reported.
 	echo '<input id="insertComment' . $photo_id . '" type="text" placeholder="comment">';
 	echo '<a href="javascript:;" class="report">Report</a>';
 	echo '</form></div>';
     echo '<div id="reportedPlaceholder"></div>';
 
-	// and finally, close that div
+    // and finally, close that photo div.
 	echo '</div>';
-}
+    }
 	?>
-
 </body>
