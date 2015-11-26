@@ -1,4 +1,5 @@
-<!--
+<?php
+/*
 Name: query.php
 Author: Christian & Hayly
 Purpose: To provide one unified location to go to for all ajax
@@ -7,9 +8,7 @@ Purpose: To provide one unified location to go to for all ajax
          a key called 'query', and then some unique identifying value. Then,
          you can go in here and create a case with the identifying value,
          and do whatever you need to do.
--->
-
-<?php
+*/
 // Connecting to the server...*dial up noises*
 require_once("conn.php");
 

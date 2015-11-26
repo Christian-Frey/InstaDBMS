@@ -5,7 +5,6 @@ Purpose: The root of just about everything. This page is the homepage which
 provides the user a list of images, links to just about everywhere, and a search
 bar if the provided links are not good enough.
 -->
-
 <head>
 <meta charset="utf-8">
 <title>InstaDBMS</title>
@@ -62,7 +61,8 @@ bar if the provided links are not good enough.
     // This gets all the images that the logged in user and their friends have
 	// posted. The first section gets the right data, and the second section
     // (After the join) describes what user_ids to search for.
-	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
+	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.user_id,
+        photo.photo_id,
 		photo.upload_date, photo.hidden, user.user_name FROM photo INNER JOIN
 		user on photo.user_id = user.user_id WHERE photo.user_id IN
 		(SELECT user_id as user from user where user_id = ? UNION SELECT friend_id
