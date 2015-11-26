@@ -47,7 +47,7 @@
 	// posted.
 	// The first section gets the right data, and the second section describes
 	// what user_ids to search for.
-	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
+	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.user_id, photo.photo_id,
 		photo.upload_date, user.user_name FROM photo INNER JOIN user on
 		photo.user_id = user.user_id WHERE photo.user_id IN
 		(SELECT user_id as user from user where user_id = ? UNION SELECT friend_id
@@ -67,13 +67,13 @@
 	$stmtImage->bind_param('ii', $cookie, $cookie);
 	$stmtImage->execute();
 	$stmtImage->store_result();
-	$stmtImage->bind_result($image, $photo_id, $uploadDate, $pUsername);
+	$stmtImage->bind_result($image, $pUser_id, $photo_id, $uploadDate, $pUsername);
 
     // They only get one image per page for simplicity.
 	while ($stmtImage->fetch())
 	{
 	echo '<div class="photo_view' . $photo_id . '">';
-	echo '<span class="pUsername">' . $pUsername . '</span>';
+	echo '<a href="../profile.php?id=' . $pUser_id . '"><span class="pUsername">' . $pUsername . '</span></a>';
 
 	// We need the date for be formatted nicely. So lets do that.
 	$timeSinceUpload = (time() - strtotime($uploadDate));

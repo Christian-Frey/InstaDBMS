@@ -23,6 +23,19 @@ switch ($_POST['query'])
                 echo 'failure';
         }
         break;
+		
+	case('promoteUser'):
+		if (!isset($_POST['user_id']) || !isset($_COOKIE['instaDBMS'])) {
+			echo "failure";
+			break;
+		}
+        $stmt = $mysqli->prepare("INSERT INTO moderator(mod_id,promoted_by,promoted_date) VALUES (?,?,NOW())");
+        $stmt->bind_param("ii", $_POST['user_id'], $_COOKIE['instaDBMS']);
+        $stmt->execute();
+        $stmt->store_result();
+        echo $mysqli->error;
+        echo 'promoted';
+        break;
 
 	case ('newUser'):
 		/* lets add this new user. */
@@ -200,7 +213,6 @@ switch ($_POST['query'])
         break;
 	
     case("followUser"):
-        // check if I like it first. And then do the opposite.
 		if (!isset($_POST['friend_id']) || !isset($_COOKIE['instaDBMS'])) {
 			echo "failure";
 			break;

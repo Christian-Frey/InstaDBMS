@@ -48,7 +48,7 @@ function addComment (e) {
       success: function (data) {
         if (data === 'success') {
           console.log('Insert Successful')
-          window.location.href = 'home.php'
+          window.location.reload(true)
         }
       }
     })

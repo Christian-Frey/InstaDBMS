@@ -27,7 +27,20 @@
 		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
- 	<p id="user_name"><a href='javascript:;' class="log_out">Log out</a></p>
+ 	<?php
+		require_once("conn.php");
+		if ($cookie === $viewing)
+			echo '<p id="user_name"><a href="javascript:;" class="log_out">Log out</a></p>';
+		else {
+			$stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
+			// We cant be sure the user hasn't modified the cookie.
+			$stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
+			$stmtUN->execute();
+			$stmtUN->bind_result($un);
+			while ($stmtUN->fetch())
+				echo "<a id=user_name href='profile.php'>" . $un . "</a>";
+		}
+	?>
 </div>
 	<?php
 	// TODO: add support for moderator buttons.
@@ -54,7 +67,7 @@
     // They only get one image per page for simplicity.
 	while ($stmtProfile->fetch())
 	{
-		echo '<div class="profile_view">';
+		echo '<div class="profile_view" user="' . $viewing . '">';
 		echo '<span class="user_name">' . $user_name . '</span></br>';
 
 		if ($viewing != $cookie) {			
@@ -74,17 +87,23 @@
 			 ' | ' . $numFollowers . ' '. 'follower' . ($numFollowers==1 ? '':'s') . ' | ' . $numFollowing . ' following</span>';
 	}
 		
-	// $stmtPromote = $mysqli->prepare("SELECT user_id FROM photolikes where user_id = ?");
-    // $stmtPromote->bind_param('i', $_COOKIE['instaDBMS']);
-    // $stmtPromote->execute();
-    // $stmtPromote->store_result();
-    // $stmtPromote->bind_result($userLikes);
-    // if ($stmtPromote->num_rows == 0)
-        // echo '<a href="javascript:;" class="heart">Not Liked</a>';
-    // else {
-        // echo '<a href="javascript:;" class="heart">Liked</a>';
-    // }
-	
+	$stmtMod = $mysqli->prepare("SELECT mod_id FROM moderator where mod_id = ?");
+	$stmtMod->bind_param('i', $cookie);
+	$stmtMod->execute();
+	$stmtMod->store_result();
+	$stmtMod->bind_result($isModerator);
+	if ($stmtMod->num_rows != 0) {
+		$stmtPromote = $mysqli->prepare("SELECT mod_id FROM moderator where mod_id = ?");
+		$stmtMod->bind_param('i', $viewing);
+		$stmtMod->execute();
+		$stmtMod->store_result();
+		$stmtMod->bind_result($isViewingModerator);
+		if ($stmtMod->num_rows == 0)
+			echo '<a href="javascript:;" class="moderatorPromote">PROMOTE TO MODERATOR</a>';
+		else
+			echo '<a href="javascript:;" class="moderatorPromote">MODERATOR</a>';
+	} 
+
 	$stmtPhotos = $mysqli->prepare("SELECT photo_id,image FROM photo WHERE photo.user_id=? ORDER BY photo.photo_id DESC");
 	$stmtPhotos->bind_param('i', $viewing);
 
