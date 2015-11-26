@@ -1,31 +1,46 @@
+<!--
+Name: query.php
+Author: Christian & Hayly
+Purpose: To provide one unified location to go to for all ajax
+         SQL queries. The structure of the file is one massive switch
+         statement. When formulating the ajax *POST* call, you need to include
+         a key called 'query', and then some unique identifying value. Then,
+         you can go in here and create a case with the identifying value,
+         and do whatever you need to do.
+-->
+
 <?php
+// Connecting to the server...*dial up noises*
 require_once("conn.php");
 
 switch ($_POST['query'])
 {
-    case('search'):
-        //search and parse
+    case('search'): // The user is searching for something
         $sap = $_POST['search'];
         if ($sap{0} == '#')
+            //They are searching for a hashtag (word[0] is a #)
             echo "hashtag";
         else
         {
+            // They are searching for a user, try to match a user_id with
+            // the name.
             $stmt = $mysqli->prepare(
-            "SELECT user_id FROM user WHERE user_name = ?");
+                "SELECT user_id FROM user WHERE user_name = ?");
             $stmt->bind_param('s', $sap);
             $stmt->execute();
             $stmt->store_result();
             $stmt->bind_result($uid);
             $stmt->fetch();
+            // We found something, lets return it.
             if ($uid != '')
                 echo $uid;
-            else
+            else // No user found.
                 echo 'failure';
         }
         break;
 
-	case ('newUser'):
-		/* lets add this new user. */
+	case ('newUser'): // We are adding a new user
+        // insert the users values into the table.
 		if (!($stmt = $mysqli->prepare("INSERT INTO user (user_name, password,
 			name, email, phone, bio, website, gender) VALUES (?, ?, ?, ?, ?,
 				 ?, ?, ?)")))
@@ -40,7 +55,7 @@ switch ($_POST['query'])
 		{
 			echo $mysqli->error;
 		}
-
+        // if we have an error inserting the data, return failure.
 		if ($stmt->execute())
 			echo "success";
 		else
@@ -48,24 +63,25 @@ switch ($_POST['query'])
 
 		break;
 
+    // Here we want to update the users profile.
 	case 'updateUser':
+		if (!($stmt = $mysqli->prepare("SELECT user_name,email,user_id
+            FROM user WHERE (user_name=? OR email=?) AND user_id != ?")))
+		  echo $mysqli->error;
 
-		if (!($stmt = $mysqli->prepare("SELECT user_name,email,user_id FROM user WHERE
-		(user_name=? OR email=?) AND user_id != ?")))
-		echo $mysqli->error;
-
-		if (!$stmt->bind_param('sss', $_POST['username'], $_POST['email'], $_COOKIE['instaDBMS']))
+		if (!$stmt->bind_param('sss', $_POST['username'], $_POST['email'],
+                $_COOKIE['instaDBMS']))
 			echo $mysqli->error;
 
 		$stmt->execute();
 		$stmt->bind_result($un, $email, $uid);
 
-		if ($stmt->fetch()) { /* no matchs, thats what we want */
+		if ($stmt->fetch()) { // no matchs, thats what we want
 			echo "userExists";
 			break;
 		}
 
-		/* lets update this user. */
+		// Updating the users information.
 		if (!($stmt = $mysqli->prepare("UPDATE user SET user_name=?, password=?,
 			name=?, email=?, phone=?, bio=?, website=?, gender=? WHERE user.user_id=?")))
 		{
@@ -80,13 +96,14 @@ switch ($_POST['query'])
 			echo $mysqli->error;
 		}
 
-		if ($stmt->execute())
+		if ($stmt->execute()) // checking if the update worked.
 			echo "success";
 		else
 			echo "failure";
 
 		break;
 
+    // Making sure the username or e-mail submitted by the user are unique.
 	case("uniqueUserOrPw"):
 		if (!($stmt = $mysqli->prepare("SELECT user_name, email FROM user WHERE
 			user_name= ? OR email= ?")))
@@ -98,15 +115,17 @@ switch ($_POST['query'])
 		$stmt->execute();
 		$stmt->bind_result($un, $email);
 
-		if (!$stmt->fetch()) /* no matchs, thats what we want */
+		if (!$stmt->fetch()) //no rows means the username and e-mail are unique
 			echo "success";
 		else
 			echo "failure";
 		break;
 
+    // Checking to see if the credentials entered by the user are correct.
 	case("checkLogin"):
 		$un = $_POST['username'];
 		$pw = $_POST['password'];
+        // They need to enter something...
 		if (($pw == NULL) || ($un == NULL))
 		{
 	    	echo "failure";
@@ -123,21 +142,24 @@ switch ($_POST['query'])
 		$stmt->execute();
 		$stmt->bind_result($uid);
 
-			//No rows returned, their credentials were wrong.
+		//No rows returned, their credentials were wrong.
 		if (!$stmt->fetch())
 	    	echo "failure";
-		else
+		else // We got a row, lets set a cookie to remember them.
 		{
 	    	setcookie("instaDBMS", $uid);
 	    	echo "success";
 		}
 		break;
 
-
+    // Adding a comment to the comment table.
 	case("addComment"):
 		$user_name = $_POST['user_name'];
+        // We only have the username, but need the user_id for the
+        // insert, so lets get that.
         $stmtUserID = $mysqli->prepare("SELECT user_id FROM user WHERE
         user_name = ?");
+        // actually inserting the comment.5
         $stmtInsert = $mysqli->prepare("INSERT INTO comment (photo_id, user_id,
             text, date) VALUES (?, ?, ?, ?)");
 
@@ -147,10 +169,12 @@ switch ($_POST['query'])
         $stmtUserID->bind_result($uid);
         $stmtUserID->fetch();
 
+        // Creating a formatted date to give to MYSQL
         $date = date('Y-m-d H:i:s');
         $stmtInsert->bind_param('iiss', $_POST['photo_id'], $uid,
          $_POST['comment'], $date);
         $stmtInsert->execute();
+        // Checking to make sure only one row has been affected.
         if ($stmtInsert->affected_rows != 1)
         {
             echo $mysqli->error;
@@ -160,13 +184,15 @@ switch ($_POST['query'])
         echo "success";
         break;
 
+    // Allows the user to like a photo
     case("likePhoto"):
-        // check if I like it first. And then do the opposite.
+        // check if the user likes it first. And then do the opposite.
         $stmt = $mysqli->prepare("SELECT photolikes.user_id FROM photolikes
              WHERE photolikes.photo_id = ? AND photolikes.user_id = ?");
         $stmt->bind_param("ii", $_POST['photo_id'], $_COOKIE['instaDBMS']);
         $stmt->execute();
         $stmt->store_result();
+        // They already liked the photo.
         if ($stmt->num_rows == '1')
         {
             // Already in the table, remove.
@@ -179,28 +205,31 @@ switch ($_POST['query'])
             echo 'unlike';
             break;
         }
-        // not in the table, add to it.
+        // not in the table, add the like to the table
         $date = date('Y-m-d H:i:s');
         $stmtLike = $mysqli->prepare("INSERT INTO photolikes (photo_id, user_id, time) VALUES (?, ?, ?)");
-        $stmtLike->bind_param('sss', $_POST['photo_id'], $_COOKIE['instaDBMS'], $date);
+        $stmtLike->bind_param('sss', $_POST['photo_id'],
+            $_COOKIE['instaDBMS'], $date);
         $stmtLike->execute();
-        echo $mysqli->error;
         echo 'like';
         break;
 
+    // The user wants to report the photo. We are not concerned if the
+    // user has already reported it, reporting it again might give
+    // them some satisfaction.
     case("reportPhoto"):
         $stmt = $mysqli->prepare("INSERT INTO reported (photo_id, user_id,
              reason) VALUES (?, ?, ?)");
         $stmt->bind_param('sss', $_POST['photo_id'], $_COOKIE['instaDBMS'],
              $_POST['reason']);
         $stmt->execute();
-
+        // Checking for error
         if (!$mysqli->error == "")
             echo 'success';
         break;
 
     case("followUser"):
-        // check if I like it first. And then do the opposite.
+        // check if the user is following first. And then do the opposite.
 		if (!isset($_POST['friend_id']) || !isset($_COOKIE['instaDBMS'])) {
 			echo "failure";
 			break;
@@ -210,6 +239,7 @@ switch ($_POST['query'])
         $stmt->bind_param("ii", $_COOKIE['instaDBMS'], $_POST['friend_id']);
         $stmt->execute();
         $stmt->store_result();
+        // they have already followed the user.
         if ($stmt->num_rows == 1)
         {
             // Already in the table, remove.
@@ -222,28 +252,34 @@ switch ($_POST['query'])
             echo 'unfollowed';
             break;
         }
-
-        $stmtLike = $mysqli->prepare("INSERT INTO friend (user_id, friend_id) VALUES (?, ?)");
+        // a new follow, add to the table.
+        $stmtLike = $mysqli->prepare("INSERT INTO friend (user_id, friend_id)
+            VALUES (?, ?)");
         $stmtLike->bind_param('ss', $_COOKIE['instaDBMS'], $_POST['friend_id']);
         $stmtLike->execute();
-        echo $mysqli->error;
         echo 'followed';
         break;
 
-
+    // Adding a hashtag to the hashtag table
     case('addHashtag'):
-        $stmt = $mysqli->prepare("INSERT INTO hashtag(photo_id, hashtag) VALUES (?, ?)");
+        $stmt = $mysqli->prepare("INSERT INTO hashtag(photo_id, hashtag)
+            VALUES (?, ?)");
         $stmt->bind_param('ss', $_POST['photo_id'], $_POST['hashtag']);
         $stmt->execute();
-        if ($stmt->num_rows == 1)
+        if ($stmt->num_rows == 1) // making sure only 1 row was inserted.
         {
             echo "Hashtag Added";
         }
         break;
 
-    case 'disableUser':
-        $date = date('Y-m-d H:i:s');
+    // diables the user profile by setting is_hidden to 1.
+    // NOTE: *DO NOT* insert any cases between this and ignoreReport.
+    // It relies on falling through to the next case to cover all the
+    // bases, especially removing the report once an action has been taken.
+    case ('disableUser'):
+        $date = date('Y-m-d H:i:s'); //MYSQL formatted date
         echo $_POST['photo_id'];
+        // disabling the user
         $stmtDisable = $mysqli->prepare("UPDATE user SET is_disabled = 1,
             disabled_by = ?, disabled_date = ?, disabled_note = ?
             WHERE user_id = (SELECT user_id FROM photo WHERE photo_id = ?)");
@@ -253,8 +289,10 @@ switch ($_POST['query'])
 
         // *****FALLING THROUGH*****
 
+    // Removing the offending photo by setting hidden to 1.
     case('removePhoto'):
         echo $_POST['photo_id'];
+        // removing the photo. No reason is required.
         $stmtRemove = $mysqli->prepare("UPDATE photo SET hidden = 1 WHERE
             photo_id = ?");
         $stmtRemove->bind_param('s', $_POST['photo_id']);
@@ -262,15 +300,18 @@ switch ($_POST['query'])
 
         // *****FALLING THROUGH*****
 
+    // Here we ignore the report by removing it from the reported table.
     case('ignoreReport'):
         echo $_POST['photo_id'];
-        $stmtIgnore = $mysqli->prepare("DELETE FROM reported WHERE photo_id = ?");
+        // Deleting all reports for that photo.
+        $stmtIgnore = $mysqli->prepare("DELETE FROM reported WHERE
+            photo_id = ?");
         $stmtIgnore->bind_param('s', $_POST['photo_id']);
         $stmtIgnore->execute();
-        break;
+        break; // Stopping at the bottom.
 
     default:
-		/* Not quite sure how we got here, but return failure to be safe. */
+		//Not quite sure how we got here, but return failure to be safe.
 		echo "failure";
 		return;
 }

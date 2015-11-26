@@ -2,9 +2,9 @@
 
 /*
  * Name: EditUserValidation.js
- * Author: Christian Frey
+ * Author: Hayly
  * Purpose: Attempts to provide some checks on what the user enters when
- *          they create their account.
+ *          they edit their account.
  */
 $(document).ready(addListeners)
 
