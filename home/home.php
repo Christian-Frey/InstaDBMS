@@ -73,6 +73,7 @@
     // They only get one image per page for simplicity.
 	while ($stmtImage->fetch())
 	{
+    if (!($pHidden === NULL)) continue;
 	echo '<div class="photo_view' . $photo_id . '">';
 	echo '<span class="pUsername">' . $pUsername . '</span>';
 
@@ -96,8 +97,7 @@
 		break;
 	}
 	// display the photo we got
-	echo $pHidden;
-	if (!$pHidden.is_null()) {
+	if ($pHidden === NULL) {
 		echo '<a href="photoView.php?photo=' . $photo_id . '"><img id="picture'
 		. $photo_id . '" src="data:image/jpg;base64,' . $image . '"/></a>';
 	}
@@ -114,7 +114,6 @@
 
 	$stmtCountLike->bind_result($numLikes, $userLikes);
 	$stmtComment->bind_result($user_name, $text, $cHidden);
-	// TODO: If hidden, then don't display. 
 
 	// using COUNT, we are guanenteed only one row, no loop needed.
 	$stmtCountLike->fetch();
@@ -125,7 +124,7 @@
 	// Going through each comment, and adding it below the picture.
 	while ($stmtComment->fetch())
 	{
-		if (!$cHidden.is_null())
+		if ($cHidden === NULL)
 		{
 			echo '<span class="commentUser">' . $user_name .  " </span>";
 			echo '<span class="comment">' . $text .'</span><br>';

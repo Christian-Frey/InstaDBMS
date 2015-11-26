@@ -6,6 +6,7 @@
       media="screen" />
 <!-- pulls the jquery file from the directory above this one -->
 <script type='text/javascript' src="../jquery.min.js"></script>
+<script type='text/javascript' src="../js/viewReportsListener.js"></script>
 </head>
 <body>
 
@@ -43,16 +44,20 @@
 	 $stmtUN->fetch();
 	echo "<a id=user_name href='profile.php'>" . $un . "</a>";
     echo '</div>';
-	// TODO: Implement View Reports
 
     $stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
       photo.upload_date, user.user_name FROM photo INNER JOIN user on
-		  photo.user_id = user.user_id WHERE photo.user_id IN
-		  (SELECT reported.user_id FROM reported)");
+		  photo.user_id = user.user_id WHERE photo.photo_id IN
+		  (SELECT reported.photo_id FROM reported)");
 	$stmtImage->execute();
 	$stmtImage->store_result();
-	$stmtImage->bind_result($image, $photo_id, $uploadDate, $pUsername);
-
+    if ($stmtImage->num_rows == 0) //Nothing is reported.
+    {
+        echo '<br><br><p id="nothing">Nothing has been reported yet.
+            Come back later.</p>';
+        exit(1);
+    }
+    $stmtImage->bind_result($image, $photo_id, $uploadDate, $pUsername);
     // They only get one image per page for simplicity.
 	while ($stmtImage->fetch())
 	{
@@ -112,13 +117,12 @@
           }
 
         }
-        // TODO: Add JS to handle the button clicks, and do the SQL.
-        // Then refesh the page. - Christian
         // TODO: Clean up CSS - Christian
         ?>
         <input type='button' id='ignore' value='Ignore' />
         <input type='button' id='remove' value='Remove' />
         <input type='button' id='disable' value='Disable User' />
+        <input type='text' id='msg' placeholder='Why Disabled?' />
         <?php
         echo '</div>';
     }

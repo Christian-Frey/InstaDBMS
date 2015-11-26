@@ -47,7 +47,7 @@ switch ($_POST['query'])
 			echo "failure";
 
 		break;
-		
+
 	case 'updateUser':
 
 		if (!($stmt = $mysqli->prepare("SELECT user_name,email,user_id FROM user WHERE
@@ -64,7 +64,7 @@ switch ($_POST['query'])
 			echo "userExists";
 			break;
 		}
-		
+
 		/* lets update this user. */
 		if (!($stmt = $mysqli->prepare("UPDATE user SET user_name=?, password=?,
 			name=?, email=?, phone=?, bio=?, website=?, gender=? WHERE user.user_id=?")))
@@ -198,7 +198,7 @@ switch ($_POST['query'])
         if (!$mysqli->error == "")
             echo 'success';
         break;
-	
+
     case("followUser"):
         // check if I like it first. And then do the opposite.
 		if (!isset($_POST['friend_id']) || !isset($_COOKIE['instaDBMS'])) {
@@ -239,6 +239,34 @@ switch ($_POST['query'])
         {
             echo "Hashtag Added";
         }
+        break;
+
+    case 'disableUser':
+        $date = date('Y-m-d H:i:s');
+        echo $_POST['photo_id'];
+        $stmtDisable = $mysqli->prepare("UPDATE user SET is_disabled = 1,
+            disabled_by = ?, disabled_date = ?, disabled_note = ?
+            WHERE user_id = (SELECT user_id FROM photo WHERE photo_id = ?)");
+        $stmtDisable->bind_param('ssss', $_COOKIE['instaDBMS'],
+            $data, $_POST['msg'], $_POST['photo_id']);
+        $stmtDisable->execute();
+
+        // *****FALLING THROUGH*****
+
+    case('removePhoto'):
+        echo $_POST['photo_id'];
+        $stmtRemove = $mysqli->prepare("UPDATE photo SET hidden = 1 WHERE
+            photo_id = ?");
+        $stmtRemove->bind_param('s', $_POST['photo_id']);
+        $stmtRemove->execute();
+
+        // *****FALLING THROUGH*****
+
+    case('ignoreReport'):
+        echo $_POST['photo_id'];
+        $stmtIgnore = $mysqli->prepare("DELETE FROM reported WHERE photo_id = ?");
+        $stmtIgnore->bind_param('s', $_POST['photo_id']);
+        $stmtIgnore->execute();
         break;
 
     default:

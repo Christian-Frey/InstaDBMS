@@ -22,24 +22,14 @@
  <!-- Lets Make the header of the page -->
  <div class=header>
 	 <p id="projectName"><a href='home/home.php'>instaDBMS</a></p>
-	 <!-- TODO: Add search functionality
-	 	  if search starts with # -> only search hashtag table
-		  otherwise -> search both users and hashtags -->
 	 <input id="searchSite" name='searchSite' type='text'
 	        placeholder=" Search?">
  	<p id="user_name"><a href='javascript:;' class="log_out">Log out</a></p>
 </div>
 	<?php
-	// TODO: add support for moderator buttons.
-	// If the user is a mod, add view Reports and Promote Moderator button.
-
-	// This gets all the images that the logged in user and their friends have
-	// posted.
-	// The first section gets the right data, and the second section describes
-	// what user_ids to search for.
 	require_once("conn.php");
-	$stmtProfile = $mysqli->prepare("SELECT 
-		user.user_name,user.name,user.bio,user.website,COUNT(distinct photo.photo_id),COUNT(distinct a.friend_id),COUNT(distinct b.friend_id) 
+	$stmtProfile = $mysqli->prepare("SELECT
+		user.user_name,user.name,user.bio,user.website,COUNT(distinct photo.photo_id),COUNT(distinct a.friend_id),COUNT(distinct b.friend_id)
 		FROM user LEFT JOIN photo ON photo.user_id=? LEFT JOIN friend a ON a.friend_id=? LEFT JOIN friend b ON b.user_id=?
 		WHERE user.user_id=?");
 
@@ -50,14 +40,14 @@
 	$stmtProfile->bind_result($user_name, $name, $bio, $website, $numPhotos, $numFollowers, $numFollowing);
 
 	echo '<div id="friend_id" style="visibility: hidden; height: 0px;">'. $viewing . '</div>';
-	
+
     // They only get one image per page for simplicity.
 	while ($stmtProfile->fetch())
 	{
 		echo '<div class="profile_view">';
 		echo '<span class="user_name">' . $user_name . '</span></br>';
 
-		if ($viewing != $cookie) {			
+		if ($viewing != $cookie) {
 			$stmtFollow = $mysqli->prepare("SELECT user_id FROM friend where user_id = ? and friend_id = ?");
 			$stmtFollow->bind_param('ii', $cookie, $viewing);
 			$stmtFollow->execute();
@@ -68,12 +58,12 @@
 				echo '<a href="javascript:;" class="follow">FOLLOWING</a>';
 		} else
 			echo '<a href="editProfile.php" class="follow">EDIT PROFILE</a>';
-		
+
 		echo '<span class="name">' . $name . ' | ' . $bio . ' | ' . $website .'</span></br>';
-		echo '<span class="stats">' . $numPhotos . ' '. 'post' . ($numPhotos==1 ? '':'s') . 
+		echo '<span class="stats">' . $numPhotos . ' '. 'post' . ($numPhotos==1 ? '':'s') .
 			 ' | ' . $numFollowers . ' '. 'follower' . ($numFollowers==1 ? '':'s') . ' | ' . $numFollowing . ' following</span>';
 	}
-		
+
 	// $stmtPromote = $mysqli->prepare("SELECT user_id FROM photolikes where user_id = ?");
     // $stmtPromote->bind_param('i', $_COOKIE['instaDBMS']);
     // $stmtPromote->execute();
@@ -84,7 +74,7 @@
     // else {
         // echo '<a href="javascript:;" class="heart">Liked</a>';
     // }
-	
+
 	$stmtPhotos = $mysqli->prepare("SELECT photo_id,image FROM photo WHERE photo.user_id=? ORDER BY photo.photo_id DESC");
 	$stmtPhotos->bind_param('i', $viewing);
 
@@ -107,7 +97,7 @@
 		echo '</div>';
 	}
 	echo '</div>';
-	
+
 	?>
 
 </body>
