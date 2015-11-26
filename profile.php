@@ -102,7 +102,6 @@ Purpose: Displays the profile of the currently logged in user if
             ($numFollowers==1 ? '':'s') . ' | ' . $numFollowing .
             ' following</span>';
 	}
-<<<<<<< HEAD
 
 	$stmtMod = $mysqli->prepare("SELECT mod_id FROM moderator where mod_id = ?");
 	$stmtMod->bind_param('i', $cookie);
