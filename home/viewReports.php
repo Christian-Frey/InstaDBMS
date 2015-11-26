@@ -1,6 +1,6 @@
 <!--
-VIEWREPORTS.php
-Written By: Christian Frey
+Name: viewReports.php
+Written By: Christian
 Purpose: To allow Moderators to manage reports submitted by users and allows
          them to take appropriate action.
 -->
