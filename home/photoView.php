@@ -59,7 +59,7 @@
 	// posted. The first section gets the right data, and the second section
     // (After the join) describes what user_ids to search for.
 	$stmtImage = $mysqli->prepare("SELECT photo.image, photo.photo_id,
-		photo.upload_date, user.user_name, photo.hidden FROM photo
+		photo.upload_date, user.user_name, user.user_id, photo.hidden FROM photo
         INNER JOIN user on photo.user_id = user.user_id WHERE
         photo.photo_id=?");
 
@@ -83,7 +83,7 @@
 		$stmtImage->execute();
 		$stmtImage->store_result();
 		$stmtImage->bind_result($image, $photo_id, $uploadDate,
-								$pUsername, $pHidden);
+								$pUsername, $pUser_id, $pHidden);
 
 		while ($stmtImage->fetch())
 		{

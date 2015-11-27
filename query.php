@@ -322,6 +322,23 @@ switch ($_POST['query'])
         $stmtIgnore->execute();
         break; // Stopping at the bottom.
 
+    // With this the user can upload files up to 16MB (2^24) in size.
+    case('uploadPhoto'):
+        // Getting the current date
+        $date = date('Y-m-d H:i:s');
+        $photoData = substr($_POST['image'], 23);
+        // The insert statement. 
+        $stmt = $mysqli->prepare("INSERT INTO photo (user_id, image,
+            upload_date) VALUES (?, ?, ?)");
+        $stmt->bind_param('sss', $_COOKIE['instaDBMS'], $photoData,
+            $date);
+        $stmt->execute();
+        if (!$mysqli->error) // Making sure there are no errors.
+            echo 'success';
+        else
+            echo $mysqli->error;
+        break;
+
     default:
 		//Not quite sure how we got here, but return failure to be safe.
 		echo "failure";
