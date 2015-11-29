@@ -76,7 +76,7 @@ function disableUser () {
   // (removes) the report serverside, and removes the photo)
   $.ajax({
     type: 'POST',
-    url: '../query.php',
+    url: 'query.php',
     data: {
       'query': 'disableUser',
       'photo_id': photoID,

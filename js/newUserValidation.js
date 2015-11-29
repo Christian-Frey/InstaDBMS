@@ -13,7 +13,7 @@ $(document).ready(addListeners)
 // Adds in all of the listeners for the page, and directs them to the
 // appropriate functions.
 function addListeners () {
-  $('#update').click(editAccount)
+  $('#create').click(editAccount)
 }
 
 function editAccount () {
@@ -42,7 +42,7 @@ function editAccount () {
       passwordConfirm.length === 0 ||
       name.length === 0 ||
       email.length === 0) {
-    $('<One or more required fields is empty.</p>').appendTo('#error')
+    $('<p>One or more required fields is empty.</p>').appendTo('#error')
     return false
   }
 
@@ -115,7 +115,7 @@ function editAccount () {
 
   // Encoding the data the user entered into a JSON format
   var dataToSend = {
-    'query': 'updateUser',
+    'query': 'newUser',
     'username': username,
     'password': password,
     'name': name,
@@ -137,13 +137,9 @@ function editAccount () {
       if (data === 'success') {
         window.location = 'profile.php'
       } else if (data === 'failure') {
-        $('error').replaceWith( // Something happened with the server
-            '<p id="error">Error updating your account.' +
-            ' Please try again later.')
-      } else if (data === 'userExists') {
         // The username or email they tried to use is already in the system.
-        $('<p>That username or email is already taken.<br>' +
-          'Please try a different username or email.</p>').appendTo('#error')
+        $('#error').replaceWith('<p>That username or email is already' +
+                'taken.<br>Please try a different username or email.</p>')
       }
     }
   })

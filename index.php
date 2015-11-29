@@ -10,7 +10,7 @@ Purpose: Provides a landing page when the user navigates to our website.
 <meta charset="utf-8">
 <title>InstaDBMS</title>
 <!-- including all of the required files. -->
-<link rel="stylesheet" type="text/css" media="screen" href="stylesheet.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="css/stylesheet.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/login.js'></script>
 </head>
@@ -39,12 +39,13 @@ Purpose: Provides a landing page when the user navigates to our website.
         } while (count($rand) != count($pruned_rand));
 
         //Querying the database for the three random images.
-        $query =  "select image from photo where photo_id=". $rand[0].
-            " or photo_id=". $rand[1]. " or photo_id=". $rand[2];
+        $query =  "SELECT image, hidden FROM photo WHERE photo_id="
+            . $rand[0] . " or photo_id=". $rand[1]. " or photo_id=". $rand[2];
 		$result = $mysqli->query($query);
 
 		while($row = mysqli_fetch_assoc($result))
         {
+            if ($row['hidden'] == 1) continue; // just dont display the image
             //adding the images to the html.
 			$base64 = 'data:image/jpg;base64, '. $row['image'];
             echo '<img alt="Embedded Image" src="' . $base64 . '" />' . PHP_EOL;

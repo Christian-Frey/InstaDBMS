@@ -122,7 +122,6 @@ Purpose: To allow Moderators to manage reports submitted by users and allows
           }
 
         }
-        // TODO: Clean up CSS - Christian
         ?>
         <!-- Allowing the mod to choose what to do with each picture.
              disable disables the user, removes the photo, and ignores

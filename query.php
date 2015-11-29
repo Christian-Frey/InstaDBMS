@@ -76,7 +76,7 @@ switch ($_POST['query'])
 		break;
 
     // Here we want to update the users profile.
-	case 'updateUser':
+	case ('updateUser'):
 		if (!($stmt = $mysqli->prepare("SELECT user_name,email,user_id
             FROM user WHERE (user_name=? OR email=?) AND user_id != ?")))
 		  echo $mysqli->error;
@@ -296,7 +296,7 @@ switch ($_POST['query'])
             disabled_by = ?, disabled_date = ?, disabled_note = ?
             WHERE user_id = (SELECT user_id FROM photo WHERE photo_id = ?)");
         $stmtDisable->bind_param('ssss', $_COOKIE['instaDBMS'],
-            $data, $_POST['msg'], $_POST['photo_id']);
+            $date, $_POST['msg'], $_POST['photo_id']);
         $stmtDisable->execute();
 
         // *****FALLING THROUGH*****

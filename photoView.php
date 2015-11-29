@@ -9,6 +9,7 @@
 <!-- pulls the jquery file from the directory above this one -->
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src="js/homeListener.js"></script>
+<script type='text/javascript' src="js/header.js"></script>
 </head>
 <body>
 <?php

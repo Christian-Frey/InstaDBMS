@@ -20,8 +20,6 @@ bar if the provided links are not good enough.
 </head>
 <body>
 <?php
-    // TODO: Check out problem with login.
-    // TODO: displaying deleted photos?
     // Checking if the user is logged in. If not, it kicks them out.
 	$cookie = $_COOKIE['instaDBMS'];
 	if (!isset($_COOKIE['instaDBMS']))
@@ -30,6 +28,10 @@ bar if the provided links are not good enough.
 
  <!-- Lets make the header of the page -->
 <?php
+    // TODO: deal with double click required for reported button
+    // TODO: Bold username of person who made report
+    // TODO: disabling a user does nothing...
+
     require_once('header.php');
     buildHeader();
     require_once('conn.php');
@@ -44,7 +46,7 @@ bar if the provided links are not good enough.
 		user on photo.user_id = user.user_id WHERE photo.user_id IN
 		(SELECT user_id as user from user where user_id = ? UNION SELECT friend_id
 	  AS user FROM friend JOIN user ON user.user_id = friend.user_id and
-		user.user_id = ?)");
+		user.user_id = ?) ORDER BY photo.upload_date DESC");
 
     // Getting the number of likes on the photo using the COUNT function.
 	// ? is the photo_id to get the likes of (from $stmtImage)

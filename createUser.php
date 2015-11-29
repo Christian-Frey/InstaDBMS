@@ -13,7 +13,6 @@ Purpose: Provides the structure for the create use page, allowing the
       href="css/stylesheet.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/newUserValidation.js'></script>
-<script type='text/javascript' src='js/header.js'></script>
 </head>
 <body>
 <h2>Create New Account</h2>

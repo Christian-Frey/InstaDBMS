@@ -1,4 +1,4 @@
-/*global $,FileReader */
+/*global $,FileReader,alert */
 
 /*
  * Name: uploadListener.js
@@ -18,6 +18,11 @@ function uploadPhoto (e) {
   // Thanks to https://developer.mozilla.org/en-US/docs/
   // Web/API/FileReader/readAsDataURL for the example
   var preview = document.querySelector('img')
+  var filename = $('#image').val()
+  if (!filename.endsWith('.jpg') || filename.endsWith('.jpeg')) {
+    alert('File must be .jpg or .jpeg')
+    return
+  }
   var image = $('#image')[0].files[0]
   var imgReader = new FileReader()
   imgReader.onloadend = function () {
