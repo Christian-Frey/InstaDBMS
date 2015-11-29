@@ -81,8 +81,9 @@ function addComment (e) {
 // This function allows the user to like and unlike a photo.
 function likePhoto (e) {
   var heart = $(this)
-  console.log(heart)
   var like = $(this).closest('div').parent().find('.likes')
+  var parent = $(this).closest('div').parent()
+  var photo_id = parent[0].getAttribute('class').replace('photo_view', '')
   var likeCount = like.text().split(' ')[0]
   // Standard AJAX request. See addComment for annotations.
   $.ajax({
@@ -91,7 +92,7 @@ function likePhoto (e) {
     data: {
       'query': 'likePhoto',
       'user_name': $('#user_name').text(),
-      'photo_id': $('#photo_id').text()
+      'photo_id': photo_id
     },
     dataType: 'text',
     success: function (data) {
@@ -107,6 +108,9 @@ function likePhoto (e) {
         $(heart).replaceWith(
             '<a href="javascript:;" class="heart">Not Liked</a>')
         likeCount = parseInt(likeCount, 10) - parseInt('1', 10)
+        if (parseInt(likeCount, 10) < parseInt('0', 10)) {
+          likeCount = 0
+        }
         $(like).replaceWith('<p class="likes">' +
             (likeCount) + (likeCount === 1 ? ' like' : ' likes') + '</p>')
       }
