@@ -26,7 +26,9 @@ function endSession () {
 
 // The user wants to follow a user.
 function followUser () {
-  console.log('Clicked follow button')
+  var stats = $('.stats').text()
+  var followers = stats.split('|')
+  var numFollowers = followers[1].split(' ')
   // Sending the data to the server to be processed.
   $.ajax({
     type: 'POST',
@@ -37,16 +39,37 @@ function followUser () {
     },
     dataType: 'text',
     success: function (data) {
-      console.log(data)
       // The user has now followed the second user, update the page.
       if (data === 'followed') {
         $('.follow').replaceWith(
             '<a href="javascript:;" class="follow">FOLLOWING</a>')
+        numFollowers[1] = parseInt(numFollowers[1], 10) + parseInt('1', 10)
+        console.log(numFollowers[1])
+        if (parseInt(numFollowers[1], 10) === 1) {
+          numFollowers[2] = 'follower'
+        } else {
+          numFollowers[2] = 'followers'
+        }
+        numFollowers = numFollowers.join(' ')
+        followers[1] = numFollowers
+        followers = followers.join('|')
+        $('.stats').replaceWith('<span class="stats">' + followers + '</span>')
       }
       // The user has now unfollowed the second user, update the page.
       if (data === 'unfollowed') {
         $('.follow').replaceWith(
-            '<a href="javascript:;" class="follow">FOLLOW</a>')
+        '<a href="javascript:;" class="follow">FOLLOW</a>')
+        numFollowers[1] = parseInt(numFollowers[1], 10) - parseInt('1', 10)
+        console.log(numFollowers[1])
+        if (parseInt(numFollowers[1], 10) === 1) {
+          numFollowers[2] = 'follower'
+        } else {
+          numFollowers[2] = 'followers'
+        }
+        numFollowers = numFollowers.join(' ')
+        followers[1] = numFollowers
+        followers = followers.join('|')
+        $('.stats').replaceWith('<span class="stats">' + followers + '</span>')
       }
     }
   })

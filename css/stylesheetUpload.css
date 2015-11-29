@@ -1,3 +1,12 @@
 #uploadBox {
   margin-top: 100px;
 }
+#upload {
+    background-color: skyblue;
+    border: solid;
+    border-color: white;
+    border-width: 1px;
+    color: black;
+    padding: 3px;
+    border-radius: 5px;
+}
