@@ -9,10 +9,14 @@ Purpose: Provides the user with nicely sorted pictures whenever they
 <meta charset="utf-8">
 <title>InstaDBMS</title>
 <!-- Including the required files -->
-<link rel="stylesheet" type="text/css" media="screen" href="profile.css" />
-<link rel="stylesheet" type="text/css" media="screen" href="home/stylesheetHome.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="css/profile.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheetHome.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheetHeader.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src="js/homeListener.js"></script>
+<script type='text/javascript' src='js/header.js'></script>
 </head>
 <body>
 <?php
@@ -24,16 +28,9 @@ Purpose: Provides the user with nicely sorted pictures whenever they
 	$viewing = '';
 	if (isset($_GET['search']))
 		$viewing = "#" . $_GET['search'];
- ?>
 
- <!-- Lets Make the header of the page -->
- <div class=header>
-	 <p id="projectName"><a href='home/home.php'>instaDBMS</a></p>
-	 <input id="searchSite" name='searchSite' type='text'
-	        placeholder=" Search?">
- 	<p id=user_name><a href='../DBMS'>Log out</a></p>
-</div>
-	<?php
+    require_once('header.php');
+    buildHeader();
     // Connecting to the server...*dial up noises*
 	require_once("conn.php");
 
@@ -56,7 +53,7 @@ Purpose: Provides the user with nicely sorted pictures whenever they
 		echo '<div class="prof_pics">';
 		// The user can click on a photo, and then it brings them to that
         // photos page.
-        echo '<a href="home/photoView.php?photo=' . $photo_id . '">
+        echo '<a href="photoView.php?photo=' . $photo_id . '">
             <img src="data:image/jpg;base64,' . $image . '"/></a>';
 		$count = $count + 1;
         // Only allowing 3 images per line on the screen.

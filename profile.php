@@ -11,11 +11,14 @@ Purpose: Displays the profile of the currently logged in user if
 <title>InstaDBMS</title>
 <!-- Including the required files -->
 <link rel="stylesheet" type="text/css" media="screen"
-	  href="profile.css" />
+	  href="css/profile.css" />
 <link rel="stylesheet" type="text/css" media="screen"
-	  href="home/stylesheetHome.css" />
+	  href="css/stylesheetHome.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheetHeader.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src="js/profileListener.js"></script>
+<script type='text/javascript' src='js/header.js'></script>
 </head>
 <body>
 <?php
@@ -26,31 +29,12 @@ Purpose: Displays the profile of the currently logged in user if
 	$viewing = $cookie;
 	if (isset($_GET['id']))
 		$viewing = $_GET['id'];
- ?>
 
- <!-- Lets Make the header of the page -->
- <div class=header>
-	 <p id="projectName"><a href='home/home.php'>instaDBMS</a></p>
-	 <input id="searchSite" name='searchSite' type='text'
-	        placeholder=" Search?">
- 	<?php
-		require_once("conn.php");
-		if ($cookie === $viewing)
-			echo '<p id="user_name"><a href="javascript:;" class="log_out">Log out</a></p>';
-		else {
-			$stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
-			// We cant be sure the user hasn't modified the cookie.
-			$stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
-			$stmtUN->execute();
-			$stmtUN->bind_result($un);
-			while ($stmtUN->fetch())
-				echo "<a id=user_name href='profile.php'>" . $un . "</a>";
-		}
-	?>
-</div>
-	<?php
+    require_once('header.php');
+    buildHeader();
+
     // Connecting to the server...*dial up noises*
-	require_once("conn.php");
+    require_once("conn.php");
     // Getting all of the useful use information on a user, including
     // how many photos they have uploaded, how many friends and following,
     // and their website.

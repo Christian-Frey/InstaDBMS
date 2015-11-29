@@ -9,10 +9,19 @@ Purpose: Allows a logged in user to change their account details. It
 <meta charset="utf-8">
 <title>InstaDBMS - New Account</title>
 <!-- including all of the required files. -->
-<link rel="stylesheet" type="text/css" media="screen" href="stylesheet.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheet.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheetHeader.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/editUserValidation.js'></script>
+<script type='text/javascript' src='js/header.js'></script>
 </head>
+
+<?php
+require_once('header.php');
+buildHeader();
+ ?>
 
 <body>
 <h2>Edit Profile</h2>

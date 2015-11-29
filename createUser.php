@@ -9,9 +9,11 @@ Purpose: Provides the structure for the create use page, allowing the
 <meta charset="utf-8">
 <title>InstaDBMS - New Account</title>
 <!-- including all of the required files. -->
-<link rel="stylesheet" type="text/css" media="screen" href="stylesheet.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheet.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/newUserValidation.js'></script>
+<script type='text/javascript' src='js/header.js'></script>
 </head>
 <body>
 <h2>Create New Account</h2>

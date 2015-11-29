@@ -9,55 +9,33 @@ bar if the provided links are not good enough.
 <meta charset="utf-8">
 <title>InstaDBMS</title>
 <link rel="stylesheet" type="text/css" media="screen"
-	  href="stylesheetHome.css" />
+	  href="css/stylesheetHome.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheetHeader.css" />
 
-<!-- pulls the jquery file from the directory above this one -->
-<script type='text/javascript' src="../jquery.min.js"></script>
+<script type='text/javascript' src="jquery.min.js"></script>
+<script type='text/javascript' src='js/header.js'></script>
 <!-- The home listener handles all the user input for the page -->
-<script type='text/javascript' src="../js/homeListener.js"></script>
+<script type='text/javascript' src="js/homeListener.js"></script>
 </head>
 <body>
 <?php
+    // TODO: Async update the number of likes on the page.
+    // TODO: Check out problem with login.
+    // TODO: displaying deleted photos?
     // Checking if the user is logged in. If not, it kicks them out.
 	$cookie = $_COOKIE['instaDBMS'];
 	if (!isset($_COOKIE['instaDBMS']))
-		header('Location: ../index.php');
+		header('Location: index.php');
  ?>
 
  <!-- Lets make the header of the page -->
- <div class=header>
-	 <a href="home.php" id="projectName">instaDBMS</a>
-	 <input id="searchSite" name='searchSite' type='text'
-	        placeholder=" Search?">
-     <a id=uploadPhoto href="uploadPhoto.php">Upload Photo</a>
-	 <?php
-     // Connecting to the server...*dial up noises*
-	 require_once("../conn.php");
+<?php
+    require_once('header.php');
+    buildHeader();
+    require_once('conn.php');
 
-     // Getting the username of the user based on their user_id.
-	 $stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
-     // Checking if the user is a moderator based on the user_id.
-     $stmtIsAMod = $mysqli->prepare("SELECT mod_id FROM
-          moderator where mod_id = ?");
-     $stmtIsAMod->bind_param('i', $_COOKIE['instaDBMS']);
-     $stmtIsAMod->execute();
-     $stmtIsAMod->store_result();
 
-     // They are a mod, so lets give them special mod buttons.
-     if ($stmtIsAMod->num_rows == 1)
-     {
-         echo '<a id="viewReport" href="viewReports.php">View Reports</a>';
-         echo '<a id="promoteMod" href="promoteMod.php">Promote Mod</a>';
-     }
-     // Now we can get the users name to display on their page.
-	 $stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
-	 $stmtUN->execute();
-	 $stmtUN->bind_result($un);
-	 while ($stmtUN->fetch())
-		echo "<a id=user_name href='../profile.php'>" . $un . "</a>";
- ?>
-</div> <!-- HEADER END -->
-	<?php
     // This gets all the images that the logged in user and their friends have
 	// posted. The first section gets the right data, and the second section
     // (After the join) describes what user_ids to search for.
@@ -97,7 +75,7 @@ bar if the provided links are not good enough.
     // The div is used to contain all the data about the photo.
 	echo '<div class="photo_view' . $photo_id . '">';
     // We want to place the user who posted above the image.
-	echo '<a href="../profile.php?id=' . $pUser_id . '"><span class="pUsername">' . $pUsername . '</span></a>';
+	echo '<a href="profile.php?id=' . $pUser_id . '"><span class="pUsername">' . $pUsername . '</span></a>';
 
 	// We need the date for be formatted nicely. So lets do that.
 	$timeSinceUpload = (time() - strtotime($uploadDate));

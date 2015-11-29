@@ -8,12 +8,15 @@ Purpose: To allow Moderators to manage reports submitted by users and allows
 <meta charset="utf-8">
 <title>InstaDBMS</title>
 
-<link rel="stylesheet" href="stylesheetHome.css" type="text/css"
+<link rel="stylesheet" href="css/stylesheetHome.css" type="text/css"
       media="screen" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheetHeader.css" />
 <!-- pulls the jquery file from the directory above this one -->
-<script type='text/javascript' src="../jquery.min.js"></script>
+<script type='text/javascript' src="jquery.min.js"></script>
+<script type='text/javascript' src='js/header.js'></script>
 <!-- Provides all the listeners required for the page. -->
-<script type='text/javascript' src="../js/viewReportsListener.js"></script>
+<script type='text/javascript' src="js/viewReportsListener.js"></script>
 </head>
 <body>
 
@@ -21,43 +24,11 @@ Purpose: To allow Moderators to manage reports submitted by users and allows
     // Checking if the user is logged in. If not, it kicks them out.
 	$cookie = $_COOKIE['instaDBMS'];
 	if (!isset($_COOKIE['instaDBMS']))
-		header('Location: ../index.php');
- ?>
+		header('Location: index.php');
 
- <!-- Lets Make the header of the page -->
- <div class=header>
-	 <a href="home.php" id="projectName">instaDBMS</a>
-	 <input id="searchSite" name='searchSite' type='text'
-	        placeholder=" Search?">
-     <a id=uploadPhoto href="uploadPhoto.php">Upload Photo</a>
- </div>
-	 <?php
-     // Connecting to the server...*dial up noises*
-	 require_once("../conn.php");
-     // Getting the username of the user based on their user_id.
-	 $stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
-     // Checking if the user is a moderator based on the user_id.
-     $stmtIsAMod = $mysqli->prepare("SELECT mod_id FROM
-          moderator where mod_id = ?");
-     $stmtIsAMod->bind_param('i', $_COOKIE['instaDBMS']);
-     $stmtIsAMod->execute();
-     $stmtIsAMod->store_result();
-     // They are a mod, so lets give them special mod buttons.
-     if ($stmtIsAMod->num_rows == 1)
-     {
-         echo '<a id="viewReport" href="viewReports.php">View Reports</a>';
-         echo '<a id="promoteMod" href="promoteMod.php">Promote Mod</a>';
-     }
-     // Now we can get the users name to display on their page.
-	 $stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
-	 $stmtUN->execute();
-     $stmtUN->store_result();
-	 $stmtUN->bind_result($un);
-	 $stmtUN->fetch();
-	echo "<a id=user_name href='profile.php'>" . $un . "</a>";
-?>
-</div> <!-- HEADER END -->
-<?php
+    require_once('header.php');
+    buildHeader();
+    require_once('conn.php');
 
     // Getting all of the photos that have ever been reported. We get
     // the photo itself, id, date, and the user who posted it.

@@ -27,7 +27,7 @@ function ignoreReport (e) {
   // Sending an AJAX request to the server to ignore the report
   $.ajax({
     type: 'POST',
-    url: '../query.php',
+    url: 'query.php',
     data: {
       'query': 'ignoreReport',
       'photo_id': photoID,
@@ -52,7 +52,7 @@ function removePhoto () {
   // (removes) the report serverside)
   $.ajax({
     type: 'POST',
-    url: '../query.php',
+    url: 'query.php',
     data: {
       'query': 'removePhoto',
       'photo_id': photoID

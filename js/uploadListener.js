@@ -26,7 +26,7 @@ function uploadPhoto (e) {
     // Sending the image data to the server
     $.ajax({
       type: 'POST',
-      url: '../query.php',
+      url: 'query.php',
       data: {
         'query': 'uploadPhoto',
         'image': imageString

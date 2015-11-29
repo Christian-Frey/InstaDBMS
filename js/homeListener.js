@@ -1,4 +1,4 @@
-/*global $ alert */
+/*global $ */
 
 /*
  * Name: homeListener.js
@@ -14,7 +14,6 @@ $(document).ready(listener)
 // Adds in all of the listeners for the page, and directs them to the
 // appropriate functions.
 function listener () {
-  $('#searchSite').keyup(search)
   // This is a substring match at the start of the tag id. It searchs for all
   // IDs that begin with 'insertComment'. This allows us to embed the
   // photo ID into the id, so we know which comment field the keystroke is
@@ -43,7 +42,7 @@ function addComment (e) {
         // hashtag, lets add it to the hashtag table.
         $.ajax({
           type: 'POST', // POST request
-          url: '../query.php', // Where to send the data to
+          url: 'query.php', // Where to send the data to
           data: { // The data to send, in a JSON Key: value arrangement.
             'query': 'addHashtag',
             'photo_id': photo_id,
@@ -60,7 +59,7 @@ function addComment (e) {
     // comment table. Same structure as above.
     $.ajax({
       type: 'POST',
-      url: '../query.php',
+      url: 'query.php',
       data: {
         'query': 'addComment',
         'comment': commentString,
@@ -84,7 +83,7 @@ function likePhoto (e) {
   // Standard AJAX request. See addComment for annotations.
   $.ajax({
     type: 'POST',
-    url: '../query.php',
+    url: 'query.php',
     data: {
       'query': 'likePhoto',
       'user_name': $('#user_name').text(),
@@ -139,7 +138,7 @@ function submitReport () {
   // Now we can send the data to the server using AJAX
   $.ajax({
     type: 'POST',
-    url: '../query.php',
+    url: 'query.php',
     data: {
       'query': 'reportPhoto',
       'photo_id': photo_id,
@@ -157,37 +156,5 @@ function submitReport () {
   })
 }
 
-// This function powers the client side of the search function.
-function search (e) {
-  // Checking to see if they pressed the enter key.
-  var key = e.which
-  if (key === 13) { // They hit enter.
-    var searchTerm = $('#searchSite').val()
-    // We now send the whole search term to the server to be processed.
-    $.ajax({
-      type: 'POST',
-      url: '../query.php',
-      data: {
-        'query': 'search',
-        'search': searchTerm
-      },
-      dataType: 'text',
-      success: function (data) {
-        // The search they entered was a hashtag, bring them to
-        // the page for that hashtag.
-        if (data === 'hashtag') {
-          searchTerm = searchTerm.substr(1)
-          var url = '../searchResults.php?search=' + searchTerm
-          window.location = (url)
-        // They were searching for a user. Here, we found no user by
-        // that name, so we let them know that their search is wrong.
-        } else if (data === 'failure') {
-          alert('No user found.')
-        // They found a user, so we can bring them to the users page.
-        } else {
-          window.location = ('../profile.php?id=' + data)
-        }
-      }
-    })
-  }
-}
+// They want to log out, so we can remove the login cookie by setting it
+// to a long time in the past.

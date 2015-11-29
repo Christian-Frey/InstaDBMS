@@ -2,49 +2,23 @@
 <meta charset="utf-8">
 <title>InstaDBMS</title>
 <link rel="stylesheet" type="text/css" media="screen"
-	  href="stylesheetHome.css" />
-
+	  href="css/stylesheetHome.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+      href="css/stylesheetHeader.css" />
+<script type='text/javascript' src='js/header.js'></script>
 <!-- pulls the jquery file from the directory above this one -->
-<script type='text/javascript' src="../jquery.min.js"></script>
-<script type='text/javascript' src="../js/homeListener.js"></script>
+<script type='text/javascript' src="jquery.min.js"></script>
+<script type='text/javascript' src="js/homeListener.js"></script>
 </head>
 <body>
 <?php
 	$cookie = $_COOKIE['instaDBMS'];
 	if (!isset($_COOKIE['instaDBMS']))
-		header('Location: ../index.php');
- ?>
+		header('Location: index.php');
 
- <!-- Lets Make the header of the page -->
- <div class=header>
-	 <a href="home.php" id="projectName">instaDBMS</a>
-	 <input id="searchSite" name='searchSite' type='text'
-	        placeholder=" Search?">
-	 <?php
-     // Connecting to the server...*dial up noises*
-	 require_once("../conn.php");
-
-     // Getting the username of the user based on their user_id.
-	 $stmtUN = $mysqli->prepare("SELECT user_name FROM user where user_id= ?");
-     // Checking if the user is a moderator based on the user_id.
-     $stmtIsAMod = $mysqli->prepare("SELECT mod_id FROM
-          moderator where mod_id = ?");
-     $stmtIsAMod->bind_param('i', $_COOKIE['instaDBMS']);
-     $stmtIsAMod->execute();
-     $stmtIsAMod->store_result();
-
-     // They are a mod, so lets give them special mod buttons.
-     if ($stmtIsAMod->num_rows == 1)
-     {
-         echo '<a id="viewReport" href="viewReports.php">View Reports</a>';
-         echo '<a id="promoteMod" href="promoteMod.php">Promote Mod</a>';
-     }
-	 // Now we can get the users name to display on their page.
-	 $stmtUN->bind_param("s", $_COOKIE['instaDBMS']);
-	 $stmtUN->execute();
-	 $stmtUN->bind_result($un);
-	 while ($stmtUN->fetch())
-		echo "<a id=user_name href='../profile.php'>" . $un . "</a>";
+    require_once('header.php');
+    buildHeader();
+    require_once('conn.php');
 
 	 $viewingPhoto = '';
      // Checking if there is an available photo_id to display, and if so,
@@ -90,7 +64,7 @@
         // The div is used to contain all the data about the photo.
 		echo '<div class="photo_view' . $photo_id . '">';
         // We want to place the user who posted above the image.
-		echo '<a href="../profile.php?id=' . $pUser_id . '">
+		echo '<a href="profile.php?id=' . $pUser_id . '">
               <span class="pUsername">' . $pUsername . '</span></a>';
 
 		// We need the date for be formatted nicely. So lets do that.

@@ -327,7 +327,7 @@ switch ($_POST['query'])
         // Getting the current date
         $date = date('Y-m-d H:i:s');
         $photoData = substr($_POST['image'], 23);
-        // The insert statement. 
+        // The insert statement.
         $stmt = $mysqli->prepare("INSERT INTO photo (user_id, image,
             upload_date) VALUES (?, ?, ?)");
         $stmt->bind_param('sss', $_COOKIE['instaDBMS'], $photoData,
@@ -344,4 +344,3 @@ switch ($_POST['query'])
 		echo "failure";
 		return;
 }
-?>

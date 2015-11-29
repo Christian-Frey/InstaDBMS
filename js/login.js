@@ -38,7 +38,7 @@ function loginUser () {
     success: function (data) {
       if (data === 'success') {
         // The login details were right, redirect them up to the homepage.
-        window.location = 'home/home.php'
+        window.location = 'home.php'
       }
       // The login details were wrong, let them know so they can fix it.
       if (data === 'failure') {

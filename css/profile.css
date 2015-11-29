@@ -48,11 +48,13 @@
 	display: block;
 }
 
-.moderatorPromote {
+.moderatorPromote, .follow {
 	float: right;
-	color: blue;
-	border-style: solid;
+	background-color: skyblue;
+	border: solid;
+	border-color: white;
 	border-width: 1px;
-	border-color: rgba(100, 100, 100, 0.2);
-	display: block;
+	color: black;
+	padding: 3px;
+	border-radius: 5px;
 }
