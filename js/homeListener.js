@@ -80,6 +80,10 @@ function addComment (e) {
 }
 // This function allows the user to like and unlike a photo.
 function likePhoto (e) {
+  var heart = $(this)
+  console.log(heart)
+  var like = $(this).closest('div').parent().find('.likes')
+  var likeCount = like.text().split(' ')[0]
   // Standard AJAX request. See addComment for annotations.
   $.ajax({
     type: 'POST',
@@ -93,13 +97,18 @@ function likePhoto (e) {
     success: function (data) {
       // They liked the photo, so we can update the page to reflect that.
       if (data === 'like') {
-        $('.heart').replaceWith(
+        $(heart).replaceWith(
             '<a href="javascript:;" class="heart">Liked</a>')
-      }
+        likeCount = parseInt(likeCount, 10) + parseInt('1', 10)
+        $(like).replaceWith('<p class="likes">' +
+            (likeCount) + (likeCount === 1 ? ' like' : ' likes') + '</p>')
+      } else if (data === 'unlike') {
       // They unliked the photo, so we can update the page to reflect that.
-      if (data === 'unlike') {
-        $('.heart').replaceWith(
+        $(heart).replaceWith(
             '<a href="javascript:;" class="heart">Not Liked</a>')
+        likeCount = parseInt(likeCount, 10) - parseInt('1', 10)
+        $(like).replaceWith('<p class="likes">' +
+            (likeCount) + (likeCount === 1 ? ' like' : ' likes') + '</p>')
       }
     }
   })

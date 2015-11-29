@@ -20,7 +20,6 @@ bar if the provided links are not good enough.
 </head>
 <body>
 <?php
-    // TODO: Async update the number of likes on the page.
     // TODO: Check out problem with login.
     // TODO: displaying deleted photos?
     // Checking if the user is logged in. If not, it kicks them out.
@@ -143,19 +142,18 @@ bar if the provided links are not good enough.
 
     // Checking if the user likes this photo. and outputing the correct
     // value, allowing them to toggle between the two at will.
-    $stmtUserLikes = $mysqli->prepare("SELECT user_id FROM photolikes where user_id = ?");
-    $stmtUserLikes->bind_param('i', $_COOKIE['instaDBMS']);
+    $stmtUserLikes = $mysqli->prepare("SELECT photo_id FROM photolikes WHERE
+        photo_id = ? AND user_id = ?");
+    $stmtUserLikes->bind_param('ii', $photo_id, $_COOKIE['instaDBMS']);
     $stmtUserLikes->execute();
     $stmtUserLikes->store_result();
-    $stmtUserLikes->bind_result($userLikes);
+    $stmtUserLikes->bind_result($pidLikes);
 
-    // No rows returned, they must not have liked the photo yet.
-    if ($stmtUserLikes->num_rows == 0)
-        echo '<a href="javascript:;" class="heart' . $photo_id . '">Not Liked</a>';
-    else {
+    $stmtUserLikes->fetch();
+    if ($stmtUserLikes->num_rows == 1)
         echo '<a href="javascript:;" class="heart">Liked</a>';
-    }
-
+    else
+        echo '<a href="javascript:;" class="heart">Not Liked</a>';
     // Providing the input comment field, and a button to report the
     // photo. Once the report button is clicked, a dropdown is added by
     // Javascript (homeListener.js) to allow the user to choose why
