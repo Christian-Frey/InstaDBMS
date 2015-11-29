@@ -34,7 +34,7 @@ Purpose: Provides a landing page when the user navigates to our website.
 		while($row = mysqli_fetch_assoc($result))
     {
         //adding the images to the html.
-				$base64 = 'data:image/jpg;base64, '. $row['image'];
+			$base64 = 'data:image/jpg;base64, '. $row['image'];
         	echo '<img alt="Embedded Image" src="' . $base64 . '" />'
 								. PHP_EOL;
 

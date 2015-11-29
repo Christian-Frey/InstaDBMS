@@ -15,7 +15,6 @@ require_once("conn.php");
 switch ($_POST['query'])
 {
     case('search'): // The user is searching for something
-        // TODO: dont display a blocked user
         $sap = $_POST['search'];
         if ($sap{0} == '#')
             //They are searching for a hashtag (word[0] is a #)
@@ -25,14 +24,16 @@ switch ($_POST['query'])
             // They are searching for a user, try to match a user_id with
             // the name.
             $stmt = $mysqli->prepare(
-                "SELECT user_id FROM user WHERE user_name = ?");
+                "SELECT user_id, is_disabled FROM user WHERE user_name = ?");
             $stmt->bind_param('s', $sap);
             $stmt->execute();
             $stmt->store_result();
-            $stmt->bind_result($uid);
+            $stmt->bind_result($uid, $disabled);
             $stmt->fetch();
             // We found something, lets return it.
-            if ($uid != '')
+            // We also want to make sure the user is not blocked. If they
+            // are, they don't exist, the user cannot be found.
+            if (($uid != '') && ($hidden != 1))
                 echo $uid;
             else // No user found.
                 echo 'failure';
@@ -304,9 +305,21 @@ switch ($_POST['query'])
     // bases, especially removing the report once an action has been taken.
     case ('disableUser'):
         $date = date('Y-m-d H:i:s'); //MYSQL formatted date
-        echo $_POST['photo_id'];
+
+        // First, we want to see if the user is a moderator to determine
+        // if they can be removed.
+        $stmtisAMod = $mysqli->prepare("SELECT mod_id FROM moderator WHERE mod_id = (SELECT user_id FROM photo WHERE photo_id = ?)");
+        $stmtisAMod->bind_param('s',$_POST['photo_id']);
+        $stmtisAMod->execute();
+        $stmtisAMod->store_result();
+        $stmtisAMod->bind_result($ismod);
+
+        if ($stmtisAMod->num_rows != 0) // They are a mod
+        {
+            echo 'moderator';
+            break;
+        }
         // disabling the user
-        // TODO: disable all photos
         $stmtDisable = $mysqli->prepare("UPDATE user SET is_disabled = 1,
             disabled_by = ?, disabled_date = ?, disabled_note = ?
             WHERE user_id = (SELECT user_id FROM photo WHERE photo_id = ?)");
@@ -314,7 +327,19 @@ switch ($_POST['query'])
             $date, $_POST['msg'], $_POST['photo_id']);
         $stmtDisable->execute();
 
-        // *****FALLING THROUGH*****
+        // here we disable all photos uploaded by the user who posted the
+        // photo.
+        $stmtDisablePhoto = $mysqli->prepare("UPDATE photo AS p, (SELECT
+            user_id FROM photo WHERE photo_id = ?) AS s SET hidden = 1 WHERE
+            p.user_id = s.user_id");
+        $stmtDisablePhoto->bind_param('s', $_POST['photo_id']);
+        $stmtDisablePhoto->execute();
+
+        // Since we updated all the photos to hidden, there is no need
+        // to remove the offending photo. We can go straight to removing
+        // the report.
+        ignoreReport();
+        break;
 
     // Removing the offending photo by setting hidden to 1.
     case('removePhoto'):
@@ -329,13 +354,8 @@ switch ($_POST['query'])
 
     // Here we ignore the report by removing it from the reported table.
     case('ignoreReport'):
-        echo $_POST['photo_id'];
-        // Deleting all reports for that photo.
-        $stmtIgnore = $mysqli->prepare("DELETE FROM reported WHERE
-            photo_id = ?");
-        $stmtIgnore->bind_param('s', $_POST['photo_id']);
-        $stmtIgnore->execute();
-        break; // Stopping at the bottom.
+        ignoreReport();
+        break;
 
     // With this the user can upload files up to 16MB (2^24) in size.
     case('uploadPhoto'):
@@ -358,4 +378,16 @@ switch ($_POST['query'])
 		//Not quite sure how we got here, but return failure to be safe.
 		echo "failure";
 		return;
+}
+
+function ignoreReport()
+{
+    global $mysqli;
+    require_once('conn.php');
+    // Deleting all reports for that photo.
+    $stmtIgnore = $mysqli->prepare("DELETE FROM reported WHERE
+        photo_id = ?");
+    $stmtIgnore->bind_param('s', $_POST['photo_id']);
+    $stmtIgnore->execute();
+    return; // Stopping at the bottom.
 }
