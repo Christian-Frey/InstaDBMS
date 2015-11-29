@@ -15,6 +15,7 @@ require_once("conn.php");
 switch ($_POST['query'])
 {
     case('search'): // The user is searching for something
+        // TODO: dont display a blocked user
         $sap = $_POST['search'];
         if ($sap{0} == '#')
             //They are searching for a hashtag (word[0] is a #)
@@ -38,7 +39,7 @@ switch ($_POST['query'])
         }
         break;
 
-	case('promoteUser'):
+	case('promoteUser'): // Here you can promote a user to mod status
 		if (!isset($_POST['user_id']) || !isset($_COOKIE['instaDBMS'])) {
 			echo "failure";
 			break;
@@ -143,21 +144,33 @@ switch ($_POST['query'])
 	    	echo "failure";
 	    	return;
 		}
-		if (!($stmt = $mysqli->prepare("SELECT user_id FROM user
-			WHERE user_name = ? AND password= ?")))
+		if (!($stmt = $mysqli->prepare("SELECT user_id, is_disabled, disabled_note
+        FROM user WHERE user_name = ? AND password= ?")))
 		{
-	    	echo $mysqli->error;
+	    	echo $stmt->errno;
 		}
 		if (!$stmt->bind_param('ss', $un, $pw))
-	    	echo $mysqli->error;
+	    	echo $stmt->errno;
 
 		$stmt->execute();
-		$stmt->bind_result($uid);
+		$stmt->bind_result($uid, $disabled, $note);
 
+    if ($disabled == '1')
+    {
+      echo 'disabled';
+      break;
+    }
 		//No rows returned, their credentials were wrong.
 		if (!$stmt->fetch())
 	    	echo "failure";
-		else // We got a row, lets set a cookie to remember them.
+
+    else if ($disabled == '1')
+    {
+        echo $note;
+        break;
+    }
+
+    else // We got a row, lets set a cookie to remember them.
 		{
 	    	setcookie("instaDBMS", $uid);
 	    	echo "success";
@@ -219,7 +232,8 @@ switch ($_POST['query'])
         }
         // not in the table, add the like to the table
         $date = date('Y-m-d H:i:s');
-        $stmtLike = $mysqli->prepare("INSERT INTO photolikes (photo_id, user_id, time) VALUES (?, ?, ?)");
+        $stmtLike = $mysqli->prepare("INSERT INTO photolikes
+                (photo_id, user_id, time) VALUES (?, ?, ?)");
         $stmtLike->bind_param('sss', $_POST['photo_id'],
             $_COOKIE['instaDBMS'], $date);
         $stmtLike->execute();
@@ -236,7 +250,7 @@ switch ($_POST['query'])
              $_POST['reason']);
         $stmt->execute();
         // Checking for error
-        if (!$mysqli->error == "")
+        if (!$stmt->errno == 0)
             echo 'success';
         break;
 
@@ -292,6 +306,7 @@ switch ($_POST['query'])
         $date = date('Y-m-d H:i:s'); //MYSQL formatted date
         echo $_POST['photo_id'];
         // disabling the user
+        // TODO: disable all photos
         $stmtDisable = $mysqli->prepare("UPDATE user SET is_disabled = 1,
             disabled_by = ?, disabled_date = ?, disabled_note = ?
             WHERE user_id = (SELECT user_id FROM photo WHERE photo_id = ?)");
@@ -329,7 +344,7 @@ switch ($_POST['query'])
         $photoData = substr($_POST['image'], 23);
         // The insert statement.
         $stmt = $mysqli->prepare("INSERT INTO photo (user_id, image,
-            upload_date) VALUES (?, ?, ?)");
+            upload_date, hidden) VALUES (?, ?, ?, 0)");
         $stmt->bind_param('sss', $_COOKIE['instaDBMS'], $photoData,
             $date);
         $stmt->execute();

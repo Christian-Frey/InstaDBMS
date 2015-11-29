@@ -1,4 +1,4 @@
-/*global $ */
+/*global $, alert */
 
 /*
  * Name: viewReportsListener.js
@@ -66,12 +66,17 @@ function removePhoto () {
 
 // We want to disable the user.
 function disableUser () {
+  // TODO: make sure you can't delete a mod.
   // Getting the id of the photo the button is associated with
   var parent = $(this).closest('div')
   var photo = parent[0].getAttribute('class')
   var photoID = photo.replace('photo_view', '')
   // Getting the message the mod wrote about why the user is disabled.
   var msg = $('.photo_view' + photoID + ' #msg').val()
+  if (msg === '' || msg === null) {
+    alert('Reason required!')
+  }
+  // TODO: look into reported message not being required.
   // Sending an AJAX request to the server to remove the photo (also ignores
   // (removes) the report serverside, and removes the photo)
   $.ajax({

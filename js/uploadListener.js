@@ -42,6 +42,8 @@ function uploadPhoto (e) {
         return result
       },
       success: function (data) {
+        window.location = 'home.php'
+        // TODO: make preview show up before submit button
         console.log(data)
       }
     })

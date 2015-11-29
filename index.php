@@ -10,7 +10,8 @@ Purpose: Provides a landing page when the user navigates to our website.
 <meta charset="utf-8">
 <title>InstaDBMS</title>
 <!-- including all of the required files. -->
-<link rel="stylesheet" type="text/css" media="screen" href="css/stylesheet.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+			href="css/stylesheet.css" />
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src='js/login.js'></script>
 </head>
@@ -26,29 +27,16 @@ Purpose: Provides a landing page when the user navigates to our website.
 		$length = $row['count(photo_id)'];
 		$result->free();
 
-		//We will have three randomly selected images from the database.
-		$rand = array();
-		do {
-			$rand[0] = rand(1, $length);
-			$rand[1] = rand(1, $length);
-			$rand[2] = rand(1, $length);
-			$pruned_rand = array_unique($rand);
-        // Since there are only 3 numbers, it runs until if finds 3 unique on
-        // on the first try, and the average running time goes down as
-        // more pictures are uploaded (Less chance of collision)
-        } while (count($rand) != count($pruned_rand));
-
-        //Querying the database for the three random images.
-        $query =  "SELECT image, hidden FROM photo WHERE photo_id="
-            . $rand[0] . " or photo_id=". $rand[1]. " or photo_id=". $rand[2];
+    //Querying the database for the three random images.
+		$query =  "SELECT image FROM photo WHERE hidden <> 1
+		 					 ORDER BY RAND() LIMIT 3";
 		$result = $mysqli->query($query);
-
 		while($row = mysqli_fetch_assoc($result))
-        {
-            if ($row['hidden'] == 1) continue; // just dont display the image
-            //adding the images to the html.
-			$base64 = 'data:image/jpg;base64, '. $row['image'];
-            echo '<img alt="Embedded Image" src="' . $base64 . '" />' . PHP_EOL;
+    {
+        //adding the images to the html.
+				$base64 = 'data:image/jpg;base64, '. $row['image'];
+        	echo '<img alt="Embedded Image" src="' . $base64 . '" />'
+								. PHP_EOL;
 
 		}
 		$mysqli->close();
@@ -65,6 +53,8 @@ Purpose: Provides a landing page when the user navigates to our website.
             <div id="failure"></div>
     		<input id="login_button" type="submit" value="Log In">
     	</form>
-    	<input id="new_account" type="button" value="Create Account">
+			<!-- TODO: fix login not working after a failed login -->
+			<!-- TODO: alert not working, change to insert. -->
+      <input id="new_account" type="button" value="Create Account">
     </div>
 </body>

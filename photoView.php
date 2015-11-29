@@ -5,7 +5,6 @@
 	  href="css/stylesheetHome.css" />
 <link rel="stylesheet" type="text/css" media="screen"
       href="css/stylesheetHeader.css" />
-<script type='text/javascript' src='js/header.js'></script>
 <!-- pulls the jquery file from the directory above this one -->
 <script type='text/javascript' src="jquery.min.js"></script>
 <script type='text/javascript' src="js/homeListener.js"></script>
@@ -91,7 +90,7 @@
 		}
 
 		// display the photo we got, assuming the photo is not hidden.
-		if ($pHidden === NULL) {
+		if ($pHidden === 0) {
 			echo '<img id="picture' . $photo_id .
 				'" src="data:image/jpg;base64,' . $image . '"/>';
 		}

@@ -28,10 +28,8 @@ bar if the provided links are not good enough.
 
  <!-- Lets make the header of the page -->
 <?php
-    // TODO: deal with double click required for reported button
-    // TODO: Bold username of person who made report
     // TODO: disabling a user does nothing...
-
+		// TODO: double click required for report
     require_once('header.php');
     buildHeader();
     require_once('conn.php');
@@ -72,7 +70,7 @@ bar if the provided links are not good enough.
     // when you are near the bottom.
 
     // If the picture is hidden, then move onto the next.
-    if (!($pHidden === NULL)) continue;
+    if (!($pHidden === 0)) continue;
     // The div is used to contain all the data about the photo.
 	echo '<div class="photo_view' . $photo_id . '">';
     // We want to place the user who posted above the image.
@@ -100,7 +98,7 @@ bar if the provided links are not good enough.
 		break;
 	}
     // display the photo we got, assuming the photo is not hidden.
-	if ($pHidden === NULL) {
+	if ($pHidden === 0) {
 		echo '<a href="photoView.php?photo=' . $photo_id . '"><img id="picture'
 		. $photo_id . '" src="data:image/jpg;base64,' . $image . '"/></a>';
 	}

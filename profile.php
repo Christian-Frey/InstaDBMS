@@ -39,7 +39,7 @@ Purpose: Displays the profile of the currently logged in user if
     // how many photos they have uploaded, how many friends and following,
     // and their website.
 	$stmtProfile = $mysqli->prepare("SELECT
-		user.user_name,user.name,user.bio,user.website,COUNT(distinct photo.photo_id),COUNT(distinct a.friend_id),COUNT(distinct b.friend_id)
+		user.user_name,user.name,user.bio,user.website,COUNT(distinct photo.photo_id),COUNT(distinct a.friend_id),COUNT(distinct b.friend_id), photo.hidden
 		FROM user LEFT JOIN photo ON photo.user_id=? LEFT JOIN friend a ON a.friend_id=? LEFT JOIN friend b ON b.user_id=?
 		WHERE user.user_id=?");
 
@@ -49,7 +49,7 @@ Purpose: Displays the profile of the currently logged in user if
 	$stmtProfile->execute();
 	$stmtProfile->store_result();
 	$stmtProfile->bind_result($user_name, $name, $bio, $website, $numPhotos,
-        $numFollowers, $numFollowing);
+        $numFollowers, $numFollowing, $pHidden);
 
     // embedding the id of the searched for user in the page.
 	echo '<div id="friend_id" style="visibility: hidden; height: 0px;">'
@@ -58,6 +58,7 @@ Purpose: Displays the profile of the currently logged in user if
 
 	while ($stmtProfile->fetch())
 	{
+		if ($pHidden == '1') continue;
 		echo '<div class="profile_view" user="' . $viewing . '">';
         // Displaying the username of the user.
 		echo '<span class="user_name">' . $user_name . '</span></br>';
@@ -119,7 +120,7 @@ Purpose: Displays the profile of the currently logged in user if
 	{
         // Displaying all of the users images.
 		echo '<div class="prof_pics">';
-		echo '<a href="home/photoView.php?photo=' . $photo_id . '">
+		echo '<a href="photoView.php?photo=' . $photo_id . '">
             <img src="data:image/jpg;base64,' . $image . '"/></a>';
 		$count = $count + 1;
         // Making sure we only display three photos per line at maximum.

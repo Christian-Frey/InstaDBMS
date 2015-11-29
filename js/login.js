@@ -39,11 +39,13 @@ function loginUser () {
       if (data === 'success') {
         // The login details were right, redirect them up to the homepage.
         window.location = 'home.php'
-      }
+      } else if (data === 'failure') {
       // The login details were wrong, let them know so they can fix it.
-      if (data === 'failure') {
         $('#failure').replaceWith(
           '<p id="failure">Invalid username or password</p>')
+      } else {
+        $('#failure').replaceWith( // They must be disabled
+          '<p id="failure">' + data + '</p>')
       }
     }
   })

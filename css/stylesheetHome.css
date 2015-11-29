@@ -49,7 +49,7 @@ img[id^=picture] {
 	margin-right: 5%;
 }
 
-.heart, .report {
+.heart, .report, #reportButton, #ignore, #remove, #disable {
 	background-color: skyblue;
 	border: solid;
 	border-color: white;

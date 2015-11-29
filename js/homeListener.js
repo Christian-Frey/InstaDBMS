@@ -21,7 +21,6 @@ function listener () {
   $('[id^="insertComment"]').keyup(addComment)
   $(document).on('click', '.heart', likePhoto)
   $('.report').click(reportPhoto)
-  $(document).on('click', '#reportButton', submitReport)
 }
 
 // This function parses the correct comment field and sends the data off
@@ -132,13 +131,13 @@ function reportPhoto () {
   $(photo).replaceWith(
         '<div id="reportedPlaceholder">' +
         '<form onsubmit="return false;"><select id="reportWhy">' +
-        '<option value="1">I do not like this photo</option>' +
-        '<option value="2">Picture is spam or a scam</option>' +
-        '<option value="3">This photo puts people at risk.</option>' +
-        '<option value="4">This photo should not be on' +
-        'InstaDBMS</option></select>' +
+        '<option value="1">This picture is stolen</option>' +
+        '<option value="2">This picture is spam</option>' +
+        '<option value="3">This photo violates instaDBMS rules</option>' +
+        '<option value="4">I don\'t like this photo</option></select>' +
         '<input type="submit" id="reportButton" value="Report Photo">' +
         '</form></div>')
+  $(document).on('click', '#reportButton', submitReport)
 }
 
 // The user has filed in their report, and clicked the report Photo

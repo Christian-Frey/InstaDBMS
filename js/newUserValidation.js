@@ -52,6 +52,11 @@ function editAccount () {
     return false
   }
 
+  if (username.includes('#') || username.includes(' ')) {
+    $('<p>Username should not contain a hashtag or space</p>').appendTo('#error')
+    return false
+  }
+
   // The password can be a maximum of 32 characters.
   if (password.length > 32) {
     $('<p>Password is too long</p>').appendTo('#error')
