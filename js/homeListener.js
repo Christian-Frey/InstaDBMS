@@ -163,6 +163,14 @@ function submitReport () {
         $(photoSel).replaceWith(
             '<p id="reportedPlaceholder">' +
             'Your report has been logged. Thank You.</p>')
+      } else if (data == 1062) {
+        $(photoSel).replaceWith(
+            '<p id="reportedPlaceholder">' +
+            '<font color=red>You have already reported this photo for that reason.</font></p>')
+      } else {
+        $(photoSel).replaceWith(
+            '<p id="reportedPlaceholder">' +
+            '<font color=red>Failed to submit report. Please try again! (error ' + data + ')</font></p>')
       }
     }
   })

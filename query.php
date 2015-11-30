@@ -251,8 +251,10 @@ switch ($_POST['query'])
              $_POST['reason']);
         $stmt->execute();
         // Checking for error
-        if (!$stmt->errno == 0)
+        if ($stmt->errno == 0)
             echo 'success';
+        else
+            echo $stmt->errno;
         break;
 
     case("followUser"):
