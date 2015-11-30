@@ -12,46 +12,53 @@ $(document).ready(addListeners)
 // Adding the upload listener
 function addListeners () {
   $('#upload').on('click', uploadPhoto)
+  $('input').change(displayPhoto)
 }
 
-function uploadPhoto (e) {
-  // Thanks to https://developer.mozilla.org/en-US/docs/
-  // Web/API/FileReader/readAsDataURL for the example
+var imageString
+
+// This function will display the preview of the image
+// the user wishes to upload.
+// Thanks to https://developer.mozilla.org/en-US/docs/
+// Web/API/FileReader/readAsDataURL for the example
+function displayPhoto () {
   var preview = document.querySelector('img')
   var filename = $('#image').val()
   if (!filename.endsWith('.jpg') || filename.endsWith('.jpeg')) {
     alert('File must be .jpg or .jpeg')
     return
   }
-  var image = $('#image')[0].files[0]
+  var image = document.querySelector('input[type=file]').files[0]
   var imgReader = new FileReader()
   imgReader.onloadend = function () {
     preview.src = imgReader.result
-    var imageString = imgReader.result
-    // Sending the image data to the server
-    $.ajax({
-      type: 'POST',
-      url: 'query.php',
-      data: {
-        'query': 'uploadPhoto',
-        'image': imageString
-      },
-      dataType: 'text',
-      beforeSend: function () {
-        var result = window.confirm('Are you sure you want to upload?')
-        return result
-      },
-      success: function (data) {
-        window.location = 'home.php'
-        // TODO: make preview show up before submit button
-        console.log(data)
-      }
-    })
+    imageString = imgReader.result
   }
-  // Making sure an image is uploaded
+    // Making sure an image is uploaded
   if (image) {
     imgReader.readAsDataURL(image)
   } else {
     preview.src = ''
   }
+}
+
+function uploadPhoto (e) {
+  // Sending the image data to the server
+  $.ajax({
+    type: 'POST',
+    url: 'query.php',
+    data: {
+      'query': 'uploadPhoto',
+      'image': imageString
+    },
+    dataType: 'text',
+    beforeSend: function () {
+      var result = window.confirm('Are you sure you want to upload?')
+      return result
+    },
+    success: function (data) {
+      window.location = 'home.php'
+      console.log(data)
+    }
+  })
 }

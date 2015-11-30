@@ -100,19 +100,19 @@ Purpose: To allow Moderators to manage reports submitted by users and allows
           echo '<span class="rUsername">' . $rUN .  " </span>";
           switch ($reason) {
             case '1':
-              echo '<span class="reason">I do not like this photo</span><br>';
+              echo '<span class="reason">This picture is stolen</span><br>';
               break;
             case '2':
-              echo '<span class="reason">Picture is spam or a scam</span><br>';
+              echo '<span class="reason">This picture is spam</span><br>';
               break;
 
             case '3':
-              echo '<span class="reason">This photo puts people at risk</span><br>';
+              echo '<span class="reason">This photo violates instaDBMS
+                    rules</span><br>';
               break;
 
             case '4':
-              echo '<span class="reason">This photo should not be on
-                InstaDBMS</span><br>';
+              echo '<span class="reason">I don\'t like this photo</span><br>';
               break;
             // In case we add reasons and it doesn't instantly get updated,
             // some default text.
