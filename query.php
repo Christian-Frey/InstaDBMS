@@ -33,7 +33,7 @@ switch ($_POST['query'])
             // We found something, lets return it.
             // We also want to make sure the user is not blocked. If they
             // are, they don't exist, the user cannot be found.
-            if (($uid != '') && ($hidden != 1))
+            if ($uid != '')
                 echo $uid;
             else // No user found.
                 echo 'failure';
@@ -245,6 +245,14 @@ switch ($_POST['query'])
     // user has already reported it, reporting it again might give
     // them some satisfaction.
     case("reportPhoto"):
+        if (!isset($_POST['reason'])) {
+            echo 'No reason given';
+            break;
+        }
+        if (!isset($_COOKIE['instaDBMS'])) {
+            echo 'Not logged in';
+            break;
+        }
         $stmt = $mysqli->prepare("INSERT INTO reported (photo_id, user_id,
              reason) VALUES (?, ?, ?)");
         $stmt->bind_param('sss', $_POST['photo_id'], $_COOKIE['instaDBMS'],
@@ -357,6 +365,22 @@ switch ($_POST['query'])
     // Here we ignore the report by removing it from the reported table.
     case('ignoreReport'):
         ignoreReport();
+        break;
+        
+    case('unhidePhoto'):
+        // Should also check if mod or not
+        if (!isset($_POST['photo_id']) || !isset($_COOKIE['instaDBMS'])) {
+            echo 'Not logged in or no photo chosen';
+            break;
+        }
+        $stmtRemove = $mysqli->prepare("UPDATE photo SET hidden = 0 WHERE
+            photo_id = ?");
+        $stmtRemove->bind_param('s', $_POST['photo_id']);
+        $stmtRemove->execute();
+        if ($stmtRemove->errno == 0)
+            echo 'success';
+        else
+            echo $stmtRemove->errno;
         break;
 
     // With this the user can upload files up to 16MB (2^24) in size.

@@ -170,7 +170,7 @@ function submitReport () {
       } else {
         $(photoSel).replaceWith(
             '<p id="reportedPlaceholder">' +
-            '<font color=red>Failed to submit report. Please try again! (error ' + data + ')</font></p>')
+            '<font color=red>Failed to submit report. Please try again! (' + data + ')</font></p>')
       }
     }
   })

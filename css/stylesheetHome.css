@@ -16,6 +16,19 @@
 	font-weight: bold;
 }
 
+.stats {
+	margin: 80px;
+	font-size: 2em;
+	font-family: serif;
+	font-weight: bold;
+}
+
+.disabled_user {
+	width: 400px;
+	height: auto;
+	margin-left: 100px;
+}
+
 .pUsername {
 	font-weight: bold;
 	margin-left: 5%;
