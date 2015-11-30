@@ -36,14 +36,14 @@ Purpose: Provides the user with nicely sorted pictures whenever they
 
     // Getting all of the photos that have been tagged with the hashtag
     // the user searched for.
-	$stmtPhotos = $mysqli->prepare("SELECT photo_id,image FROM photo WHERE
-        photo.photo_id IN (SELECT hashtag.photo_id FROM hashtag WHERE
+	$stmtPhotos = $mysqli->prepare("SELECT photo_id, image, hidden FROM photo
+        WHERE photo.photo_id IN (SELECT hashtag.photo_id FROM hashtag WHERE
         hashtag.hashtag=?) ORDER BY photo.photo_id DESC");
 	$stmtPhotos->bind_param('s', $viewing);
 
 	$stmtPhotos->execute();
 	$stmtPhotos->store_result();
-	$stmtPhotos->bind_result($photo_id, $image);
+	$stmtPhotos->bind_result($photo_id, $image, $hidden);
 
     // Letting the user know what they searched for.
 	echo '<div class="searchHeader">' . $viewing . ' </br>' ;
@@ -53,6 +53,7 @@ Purpose: Provides the user with nicely sorted pictures whenever they
 		echo '<div class="prof_pics">';
 		// The user can click on a photo, and then it brings them to that
         // photos page.
+        if ($hidden == 1) continue;
         echo '<a href="photoView.php?photo=' . $photo_id . '">
             <img src="data:image/jpg;base64,' . $image . '"/></a>';
 		$count = $count + 1;
