@@ -39,7 +39,7 @@ Purpose: Displays the profile of the currently logged in user if
     // how many photos they have uploaded, how many friends and following,
     // and their website.
 	$stmtProfile = $mysqli->prepare("SELECT
-		user.user_name,user.name,user.bio,user.website,COUNT(distinct photo.photo_id),COUNT(distinct a.friend_id),COUNT(distinct b.friend_id), photo.hidden, user.is_disabled
+		user.user_name,user.name,user.bio,user.website,COUNT(distinct photo.photo_id),COUNT(distinct a.friend_id),COUNT(distinct b.friend_id), user.is_disabled
 		FROM user LEFT JOIN photo ON photo.user_id=? LEFT JOIN friend a ON a.friend_id=? LEFT JOIN friend b ON b.user_id=?
 		WHERE user.user_id=?");
 
@@ -49,7 +49,7 @@ Purpose: Displays the profile of the currently logged in user if
 	$stmtProfile->execute();
 	$stmtProfile->store_result();
 	$stmtProfile->bind_result($user_name, $name, $bio, $website, $numPhotos,
-        $numFollowers, $numFollowing, $pHidden, $is_disabled);
+        $numFollowers, $numFollowing, $is_disabled);
 
     // embedding the id of the searched for user in the page.
 	echo '<div id="friend_id" style="visibility: hidden; height: 0px;">'
@@ -58,8 +58,6 @@ Purpose: Displays the profile of the currently logged in user if
 
 	while ($stmtProfile->fetch())
 	{
-		
-		if ($pHidden == '1') continue;
 		echo '<div class="profile_view" user="' . $viewing . '">';
         // Displaying the username of the user.
 		echo '<span class="user_name">' . $user_name . '</span></br>';
@@ -110,19 +108,20 @@ Purpose: Displays the profile of the currently logged in user if
 				echo '<a href="javascript:;" class="moderatorPromote">MODERATOR</a>';
 		}
 		// Getting the photos uploaded by the requested user.
-		$stmtPhotos = $mysqli->prepare("SELECT photo_id,image FROM photo WHERE
+		$stmtPhotos = $mysqli->prepare("SELECT photo_id,image,hidden FROM photo WHERE
 			photo.user_id=? ORDER BY photo.photo_id DESC");
 
 		$stmtPhotos->bind_param('i', $viewing);
 
 		$stmtPhotos->execute();
 		$stmtPhotos->store_result();
-		$stmtPhotos->bind_result($photo_id, $image);
+		$stmtPhotos->bind_result($photo_id, $image, $pHidden);
 
 		echo '<div>';
 		$count = 0;
 		while ($stmtPhotos->fetch())
 		{
+			if ($pHidden == '1') continue;
 			// Displaying all of the users images.
 			echo '<div class="prof_pics">';
 			echo '<a href="photoView.php?photo=' . $photo_id . '">
