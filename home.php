@@ -28,7 +28,6 @@ bar if the provided links are not good enough.
 
  <!-- Lets make the header of the page -->
 <?php
-    // TODO: disabling a user does nothing...
     require_once('header.php');
     buildHeader();
     require_once('conn.php');
