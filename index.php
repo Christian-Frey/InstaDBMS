@@ -53,8 +53,6 @@ Purpose: Provides a landing page when the user navigates to our website.
             <div id="failure"></div>
     		<input id="login_button" type="submit" value="Log In">
     	</form>
-			<!-- TODO: fix login not working after a failed login -->
-			<!-- TODO: alert not working, change to insert. -->
       <input id="new_account" type="button" value="Create Account">
     </div>
 </body>

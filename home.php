@@ -29,7 +29,6 @@ bar if the provided links are not good enough.
  <!-- Lets make the header of the page -->
 <?php
     // TODO: disabling a user does nothing...
-		// TODO: double click required for report
     require_once('header.php');
     buildHeader();
     require_once('conn.php');

@@ -76,7 +76,6 @@ function disableUser () {
     alert('Reason required!')
     return
   }
-  // TODO: look into reported message not being required.
   // Sending an AJAX request to the server to remove the photo (also ignores
   // (removes) the report serverside, and removes the photo)
   $.ajax({
